@@ -28,6 +28,9 @@ class Utils {
                 if(collection && collection.code && collection.code == 'ECONNREFUSED') {
                     return 'Database cannot be connected'
                 }
+                else if(collection && collection.name && collection.name == 'MongoNetworkError') {
+                    return 'Network error during Mongo Connect'
+                }
                 else {
                     return callback(collection)
                 }

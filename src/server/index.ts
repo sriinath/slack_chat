@@ -1,11 +1,26 @@
 import express = require("express")
+
 const bodyParser = require('body-parser')
 const app: express.Application = express();
-import { ChatRoute } from './routes'
+import {
+    ChatRoute,
+    UserRoute
+} from './routes'
+import console = require("console");
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*")
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS')
+    res.header("Access-Control-Max-Age", "600")
+    next();
+});
+
 app.use('/chat/', ChatRoute)
+app.use('/user/', UserRoute)
 
 app.listen(3000, () => {
     console.log('app started')

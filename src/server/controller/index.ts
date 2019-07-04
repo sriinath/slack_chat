@@ -1,2 +1,2 @@
-export * from './UserController'
 export * from './ChatController'
+export * from './UserController'

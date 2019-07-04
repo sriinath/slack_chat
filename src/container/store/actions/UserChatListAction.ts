@@ -1,6 +1,8 @@
-const UserChatListAction = (action) => {
+import { ChatType } from '../../../types'
+
+const UserChatListAction = (action: ChatType[]) => {
     return {
-        type: 'expenses',
+        type: 'chatList',
         data: action
     }
 }

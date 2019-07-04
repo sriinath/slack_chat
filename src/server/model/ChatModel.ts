@@ -1,19 +1,14 @@
 import { UtilModel } from './Util'
 import { config } from '../config'
-import { UserChats } from '../types'
 
-const { UserListCollection } = config
+const { ChatListCollection } = config
 
 class Chat {
-    getChatList(userName: string) {
-        const toFind = { userName }
-        return UtilModel.getData(UserListCollection, toFind)
-        .then((data: UserChats[]) => {
-            if(data && data.length)
-                return data
-            return data
-        })
-        .catch((err: Error) => err)
+    getChatList(chatId: string) {
+        if(chatId) {
+            const toFind = { chatId }
+            return UtilModel.getData(ChatListCollection, toFind)
+        }
     }
 }
 

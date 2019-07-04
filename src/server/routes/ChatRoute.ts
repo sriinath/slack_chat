@@ -3,6 +3,6 @@ const ChatRoute = express.Router()
 
 import { ChatController } from '../controller'
 
-ChatRoute.post('/chatlist',ChatController.getChatList)
+ChatRoute.post('/chatlist', (req, res) => ChatController.getChatList(req, res))
 
 export { ChatRoute }

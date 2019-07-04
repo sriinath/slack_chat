@@ -1,9 +1,3 @@
-interface ChatList {
-    owner: string
-	name: string
-    chatId: string
-    chats: [UserChatType]
-}
 interface UserChatType {
     chatId?: string
     recipientUserName: string
@@ -13,6 +7,5 @@ interface UserChatType {
 }
 
 export {
-    ChatList,
     UserChatType,
 }

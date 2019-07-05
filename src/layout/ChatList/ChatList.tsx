@@ -28,4 +28,5 @@ const ChatListBlock = (props: any) => {
         </ElementWithWrapper>
     )
 }
+
 export { ChatList }

@@ -5,12 +5,12 @@ const mongoClient = mongoDB.MongoClient
 const { dbURL, dbName } = config
 
 class Utils {
-    dbConnect() {
+    private dbConnect() {
         return mongoClient.connect(dbURL, {
             useNewUrlParser : true
         })
     }
-    getCollection(collectionName: string) {
+    private getCollection(collectionName: string) {
         if(collectionName) {
             return this.dbConnect()
             .then((db: mongoDB.MongoClient) => {

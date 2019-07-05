@@ -7,14 +7,14 @@ import reducer from './container/store/reducer'
 
 const store = createStore(reducer)
 
-import { UserChatListContainer } from './container'
-import { ChatList } from './layout'
+import { UserChatListContainer, MessageListContainer } from './container'
+import { ChatList, MessageList } from './layout'
 
 ReactDOM.render(
     <Provider store={store}>
-        <UserChatListContainer>
-            <ChatList />
-        </UserChatListContainer>
+        <MessageListContainer>
+            <MessageList />
+        </MessageListContainer>
     </Provider>,
     document.getElementById("root")
 )

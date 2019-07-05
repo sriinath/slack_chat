@@ -3,30 +3,32 @@ import { Utils } from '../../../util'
 
 import { connect } from 'react-redux'
 import { AppState } from '../../store/reducer'
+import { ChatMessageListAction } from '../../store/actions'
 import { DataAPI } from '../../../config'
-import { UserChatListAction } from '../../store/actions'
+import { MessageListContextType } from './typings'
 
-const UserChatListContext = React.createContext([])
-const { Consumer, Provider } = UserChatListContext
+const defaultMessageList: MessageListContextType = {
+    chatId: '',
+    length: 0,
+    chats: new Map()
+}
+const MessageListContext = React.createContext(defaultMessageList)
+const { Consumer, Provider } = MessageListContext
+const { getChats } = DataAPI
 
-class UserChatListContainer extends React.Component<any> {
+class MessageListContainer extends React.Component<any> {
     componentDidMount() {
-        const { getUserList } = DataAPI
-        Utils.fetchResponse(getUserList, {
+        Utils.fetchResponse(getChats, {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ 'userName': 'srinath' })
+            body: JSON.stringify({ 'userName': 'srinath', 'chatId': '52329' })
         }, [])
         .then(resp => {
             if(resp) {
                 const { status } = resp
                 if(status.toLowerCase() === 'success') {
                     const { data } = resp
-                    if(data && data.status && data.status.toLowerCase() === 'success') {
-                        let UserInfo =  data.data || []
-                        const UserChats = UserInfo.length && UserInfo[0].chats || []
-                        this.props.dispatch(UserChatListAction(UserChats))
-                    }
+                    this.props.dispatch(ChatMessageListAction(data && data.data || {}))
                 }
             }
         })
@@ -45,8 +47,8 @@ class UserChatListContainer extends React.Component<any> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-    data: state.UserChatListReducer
+    data: state.ChatMessageListReducer
 })
 
-export default connect(mapStateToProps)(UserChatListContainer)
-export { Consumer as UserChatListConsumer }
+export default connect(mapStateToProps)(MessageListContainer)
+export { Consumer as MessageListConsumer }

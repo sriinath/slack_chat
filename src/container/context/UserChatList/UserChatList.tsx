@@ -5,8 +5,14 @@ import { connect } from 'react-redux'
 import { AppState } from '../../store/reducer'
 import { DataAPI } from '../../../config'
 import { UserChatListAction } from '../../store/actions'
+import { UserChats } from '../../../types'
 
-const UserChatListContext = React.createContext([])
+const defaultUserChatListContext: UserChats = {
+    chats: [],
+    groups: [],
+    userName: ''
+}
+const UserChatListContext = React.createContext(defaultUserChatListContext)
 const { Consumer, Provider } = UserChatListContext
 
 class UserChatListContainer extends React.Component<any> {
@@ -24,8 +30,8 @@ class UserChatListContainer extends React.Component<any> {
                     const { data } = resp
                     if(data && data.status && data.status.toLowerCase() === 'success') {
                         let UserInfo =  data.data || []
-                        const UserChats = UserInfo.length && UserInfo[0].chats || []
-                        this.props.dispatch(UserChatListAction(UserChats))
+                        // const UserChats = UserInfo.length && UserInfo[0].chats || []
+                        this.props.dispatch(UserChatListAction(UserInfo[0]))
                     }
                 }
             }
@@ -33,11 +39,11 @@ class UserChatListContainer extends React.Component<any> {
         .catch(err => console.log(err))
     }
     render() {
+        console.log(this.props)
         const {
             data,
             children
         } = this.props
-        console.log(data)
         return <Provider value={data}>
             {children}
         </Provider>

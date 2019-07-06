@@ -52,7 +52,7 @@ const ChatMessageListReducer = (state: any = defaultState, action: ChatMessageLi
                 chats,
                 length
             } = data
-            let chatMessageMap = constructMessageList(chats || [])
+            let chatMessageMap = constructMessageList(chats && chats.reverse() || [])
             let updatedMessageStore = {
                 chats: chatMessageMap,
                 chatId,

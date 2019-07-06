@@ -1,30 +1,61 @@
 import * as React from 'react'
 
-import { ListItem } from '../../component'
+import { ListItem, Text } from '../../component'
 import { MessageListConsumer } from '../../container'
 import { UserChatType } from '../../types'
+import {
+    MessageTitleWrapper,
+    MessageBlockWrapper
+} from './styled'
 
-class MessageList extends React.Component {
-    render() {
-        return <MessageListConsumer>
-            {context => {
-                const {
-                    chatId,
-                    chats,
-                    length
-                } = context
+const MessageList = (props: any) => {
+    return <MessageListConsumer>
+        {context => {
+            const {
+                chatId,
+                chats,
+                length
+            } = context
+            let ChatMessageDOM: any = []
+            chats.forEach((value, key) => {
                 let UserChatsDOM: any = []
-                chats.forEach((value, key) => {
-                    UserChatsDOM.push(<div>{key}</div>)
-                    value.forEach((timeValue, timeKey) => {
-                        UserChatsDOM.push(<div>{timeKey}</div>)
-                        timeValue.map((chatData, chatKey) => UserChatsDOM.push(<div key={'chatmessage'+ timeKey + chatKey}>{chatData.message}</div>))
+                let PrevRecipientName = ''
+                UserChatsDOM.push(<Text text={key} isHeading={false} />)
+                value.forEach((timeValue, timeKey) => {
+                    timeValue.map((chatData, chatKey) => {
+                        const {
+                            message,
+                            recipientUserName
+                        } = chatData
+                        UserChatsDOM.push(<MessageBlockWrapper>
+                            {
+                                PrevRecipientName !== recipientUserName ? <MessageTitleWrapper>
+                                    <Text
+                                        text={recipientUserName}
+                                        isHeading={false}
+                                        isTitle={true}
+                                    />
+                                    <Text
+                                        text={timeKey}
+                                        isHeading={false}
+                                    />
+                                </MessageTitleWrapper>
+                                : null
+                            }
+                            <Text
+                                key={'chatmessage'+ timeKey + chatKey}
+                                text={message}
+                                isHeading={false}
+                            />
+                        </MessageBlockWrapper>)
+                        PrevRecipientName = recipientUserName
                     })
                 })
-                return <>{UserChatsDOM}</>
-            }}
-        </MessageListConsumer>
-    }
+                ChatMessageDOM.push(UserChatsDOM)
+            })
+            return <>{ChatMessageDOM}</>
+        }}
+    </MessageListConsumer>
 }
 
 export { MessageList }

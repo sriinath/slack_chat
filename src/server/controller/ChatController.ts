@@ -3,7 +3,6 @@ import { Util } from '../utils'
 import { ChatModel } from '../model'
 import { ChatType } from '../../types'
 import { UserController } from '../controller'
-import console = require('console');
 
 class Chat {
     async getChatList(req: Request, res: Response) {
@@ -17,40 +16,39 @@ class Chat {
             } = body
             if(chatId && userName) {
                 const validChatId = await this.checkValidChatId(userName, chatId)
-                // if(validChatId) {
+                if(validChatId) {
                     ChatModel.getChatList(chatId)
                     .then(data => {
-                        console.log(data)
-                        data = [{
-                            chatId: '52329',
-                            chats: [
-                                { 
-                                    recipientUserName: 'srinath',
-                                    message: 'hello',
-                                    time: "2019-07-05T12:07:48.891Z"
-                                },
-                                { 
-                                    recipientUserName: 'srinath',
-                                    message: 'hi',
-                                    time: "2019-07-05T11:56:29.022Z" 
-                                },
-                                {
-                                    recipientUserName: 'virat',
-                                    message: 'hey',
-                                    time: "2019-07-05T12:07:46.958Z"
-                                },
-                                {
-                                    recipientUserName: 'virat',
-                                    message: 'Whats up',
-                                    time: "2019-07-05T12:07:44.926Z"
-                                },
-                                {
-                                    recipientUserName: 'srinath',
-                                    message: 'hello',
-                                    time: "2019-07-05T11:56:25.812Z"
-                                }
-                            ]
-                        }]
+                        // data = [{
+                        //     chatId: '52329',
+                        //     chats: [
+                        //         { 
+                        //             recipientUserName: 'srinath',
+                        //             message: 'hello',
+                        //             time: "2019-07-05T12:07:48.891Z"
+                        //         },
+                        //         { 
+                        //             recipientUserName: 'srinath',
+                        //             message: 'hi',
+                        //             time: "2019-07-05T11:56:29.022Z" 
+                        //         },
+                        //         {
+                        //             recipientUserName: 'virat',
+                        //             message: 'hey',
+                        //             time: "2019-07-05T12:07:46.958Z"
+                        //         },
+                        //         {
+                        //             recipientUserName: 'virat',
+                        //             message: 'Whats up',
+                        //             time: "2019-07-05T12:07:44.926Z"
+                        //         },
+                        //         {
+                        //             recipientUserName: 'srinath',
+                        //             message: 'hello',
+                        //             time: "2019-07-05T11:56:25.812Z"
+                        //         }
+                        //     ]
+                        // }]
                         if(data && Array.isArray(data) && data.length) {
                             const chatInfo = data[0]
                             let chatArr = chatInfo && chatInfo.chats || []
@@ -76,10 +74,10 @@ class Chat {
                         console.log(err)
                         res.send(Util.returnResp([], 'Failure', 500, 'There was some Error while retreiving data'))
                     })
-                // }
-                // else {
-                //     res.send(Util.returnResp([], 'Failure', 200, 'Chat Id provided doesnot exist with current user'))
-                // }
+                }
+                else {
+                    res.send(Util.returnResp([], 'Failure', 200, 'Chat Id provided doesnot exist with current user'))
+                }
             }
             else {
                 res.send(Util.returnResp([], 'Failure', 200, 'UserName & chatId are mandatory fields'))

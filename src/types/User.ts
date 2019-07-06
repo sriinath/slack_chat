@@ -1,27 +1,19 @@
 interface UserChats {
     userName: string
-    userMail?: string
-    chats?: [ChatType]
-    groups?: [GroupChatType]
+    chats?: ChatType[]
+    groups?: GroupType[]
 }
 interface ChatType {
     chatId: string
     recipientUserName: string
     starred?: 'true' | 'false'
 }
-interface GroupChatType extends ChatType {
+interface GroupType {
     chatId: string
-    groupName: string
-    chats: [groupChat]
-}
-interface groupChat {
-    userName: string
-    accepted: boolean
-    owner: string
+    name: string
 }
 
 export {
     UserChats,
     ChatType,
-    GroupChatType
 }

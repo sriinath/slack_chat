@@ -8,7 +8,6 @@ const ElementWithWrapper: React.FC<ElementWithWrapperProps> = (props) => {
         elementProps,
         children
     } = props
-    console.log(props)
     return <ElementWrapper {...elementProps} onClick={clickHandler || null}>
         {children}
     </ElementWrapper>

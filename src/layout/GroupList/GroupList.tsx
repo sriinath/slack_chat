@@ -2,34 +2,34 @@ import * as React from 'react'
 import { Text, ElementWithWrapper, ListItem } from '../../component'
 import { UserChatListConsumer } from '../../container'
 
-const ChatList = (props: any) => {
+const GroupList = (props: any) => {
     return <UserChatListConsumer>
         {context => {
             const {
-                chats
+                groups
             } = context
             return <ListItem
-                list={chats || []}
-                Item={ChatListBlock}
+                list={groups || []}
+                Item={GroupListBlock}
             />
         }}
     </UserChatListConsumer>
 }
-const ChatListBlock = (props: any) => {
+const GroupListBlock = (props: any) => {
     const {
-        recipientUserName,
-        chatId
+        groupName,
+        groupId
     } = props
     const clickHandler = (e: Event) => {
-        console.log(chatId)
-    }
+        console.log(groupId)
+    }    
     return (
         <ElementWithWrapper
             clickHandler={clickHandler}
         >
-            <Text isHeading={false} text={recipientUserName} />
+            <Text isHeading={false} text={groupName} />
         </ElementWithWrapper>
     )
 }
 
-export { ChatList }
+export { GroupList }

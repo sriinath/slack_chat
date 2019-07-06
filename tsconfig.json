@@ -8,7 +8,8 @@
         "skipLibCheck": true
     },
     "include": [
-        "./src/server/*"
+        "./src/server/*",
+        "./src/fonts/*"
     ],
     "typeRoots":["./node_modules/@types"]
 }

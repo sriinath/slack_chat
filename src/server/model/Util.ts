@@ -1,5 +1,6 @@
 import mongoDB = require('mongodb')
 import { config } from '../config'
+import console = require('console');
 
 const mongoClient = mongoDB.MongoClient
 const { dbURL, dbName } = config
@@ -66,6 +67,69 @@ class Utils {
             return this.findData(collection, toFind, limitValue, skip)
         }
         return this.connectDBCollection(collectionName, findData)
+    }
+    insertData(collectionName: string, insertData: any) {
+        if(collectionName) {
+            return this.getCollection(collectionName)
+            .then((collection: mongoDB.Collection) => {
+                return collection.insertOne(insertData)
+                .then(data => {
+                    console.log(data)
+                    return data
+                })
+                .catch(err => {
+                    console.log(err)
+                    return 'An error occured while inserting data to db' 
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                return 'An error occured while fetching collection results'
+            })    
+        }
+        else {
+            return Promise.resolve('Collection Name is mandatory')
+        }
+    }
+    checkDuplicateAndUpdate(collectionName: string, toFind: any, updatedData: any) {
+        if(collectionName) {
+            return this.getCollection(collectionName)
+            .then((collection: any) => {
+                return collection.findAndModify(toFind, {}, {$set: updatedData}, {upsert: true})
+                .then((data: any) => data)
+                .catch((err: mongoDB.MongoError) => {
+                    console.log(err)
+                    return 'An error occured while inserting data to db' 
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                return 'An error occured while fetching collection results'
+            })
+        }
+        else {
+            return Promise.resolve('Collection Name is mandatory')
+        }
+    }
+    updateData(collectionName: string, toFind: any, updatedData: string) {
+        if(collectionName) {
+            return this.getCollection(collectionName)
+            .then((collection: any) => {
+                return collection.updateOne(toFind, updatedData)
+                .then((data: any) => data)
+                .catch((err: mongoDB.MongoError) => {
+                    console.log(err)
+                    return 'An error occured while fetching collection results'
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                return 'An error occured while fetching collection results'
+            })
+        }
+        else {
+            return Promise.resolve('Collection Name is mandatory')
+        }
     }
 }
 const UtilModel = new Utils()

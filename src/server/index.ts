@@ -4,7 +4,8 @@ const bodyParser = require('body-parser')
 const app: express.Application = express();
 import {
     ChatRoute,
-    UserRoute
+    UserRoute,
+    GroupRoute
 } from './routes'
 import console = require("console");
 
@@ -21,6 +22,7 @@ app.use(function(req, res, next) {
 
 app.use('/chat/', ChatRoute)
 app.use('/user/', UserRoute)
+app.use('/group/', GroupRoute)
 
 app.listen(3000, () => {
     console.log('app started')

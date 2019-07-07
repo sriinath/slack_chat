@@ -7,7 +7,7 @@ import {
 } from '../../component'
 
 const LeftWrapper = styled.div`
-    width: 35%;
+    width: 30%;
     background: #4a154b;
     color: #f5f5f5;
     height: 100%;
@@ -18,9 +18,6 @@ const LeftWrapper = styled.div`
         &:before {
             content: "\f055";
         }
-    }
-    ${IconWithTextWrapper} {
-        padding: 10px;
     }
     ${ElementWrapper} {
         padding: 10px;

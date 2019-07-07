@@ -1,5 +1,5 @@
 class Util {
-    fetchResponse(url: string, options: any, defaultReturnValue?: {} | []) {
+    fetchResponse(url: string, options?: any, defaultReturnValue?: {} | []) {
         return fetch(url, options)
         .then(data => data.json())
         .then(data => {

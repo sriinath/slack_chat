@@ -43,6 +43,26 @@ class User {
         }
         return Promise.resolve(Util.returnResp([], 'Failure', 200, 'User Name is mandatory'))
     }
+    searchUser(req: Request, res: Response) {
+        const { query } = req
+        if(query) {
+            const { searchTerm } = query
+            if(searchTerm) {
+                UserModel.searchUser(searchTerm)
+                .then(userResp => res.send(Util.returnResp(userResp, 'Success')))
+                .catch(err => {
+                    console.log(err)
+                    res.send(Util.returnResp([], 'Failure', 500, 'There was some Error while retreiving data'))
+                })
+            }
+            else {
+                res.send(Util.returnResp([], 'Failure', 200, 'Search Term is mandatory'))
+            }
+        }
+        else {
+            res.send(Util.returnResp([], 'Failure', 200, 'cannot read the user params'))
+        }
+    }
 }
 
 const UserController = new User()

@@ -19,36 +19,36 @@ class Chat {
                 if(validChatId) {
                     ChatModel.getChatList(chatId)
                     .then(data => {
-                        // data = [{
-                        //     chatId: '52329',
-                        //     chats: [
-                        //         { 
-                        //             recipientUserName: 'srinath',
-                        //             message: 'hello',
-                        //             time: "2019-07-05T12:07:48.891Z"
-                        //         },
-                        //         { 
-                        //             recipientUserName: 'srinath',
-                        //             message: 'hi',
-                        //             time: "2019-07-05T11:56:29.022Z" 
-                        //         },
-                        //         {
-                        //             recipientUserName: 'virat',
-                        //             message: 'hey',
-                        //             time: "2019-07-05T12:07:46.958Z"
-                        //         },
-                        //         {
-                        //             recipientUserName: 'virat',
-                        //             message: 'Whats up',
-                        //             time: "2019-07-05T12:07:44.926Z"
-                        //         },
-                        //         {
-                        //             recipientUserName: 'srinath',
-                        //             message: 'hello',
-                        //             time: "2019-07-05T11:56:25.812Z"
-                        //         }
-                        //     ]
-                        // }]
+                    //     data = [{
+                    //     chatId: '52329',
+                    //     chats: [
+                    //         { 
+                    //             recipientUserName: 'srinath',
+                    //             message: 'hello',
+                    //             time: "2019-07-05T12:07:48.891Z"
+                    //         },
+                    //         { 
+                    //             recipientUserName: 'srinath',
+                    //             message: 'hi',
+                    //             time: "2019-07-05T11:56:29.022Z" 
+                    //         },
+                    //         {
+                    //             recipientUserName: 'virat',
+                    //             message: 'hey',
+                    //             time: "2019-07-05T12:07:46.958Z"
+                    //         },
+                    //         {
+                    //             recipientUserName: 'virat',
+                    //             message: 'Whats up',
+                    //             time: "2019-07-05T12:07:44.926Z"
+                    //         },
+                    //         {
+                    //             recipientUserName: 'srinath',
+                    //             message: 'hello',
+                    //             time: "2019-07-05T11:56:25.812Z"
+                    //         }
+                    //     ]
+                    // }]
                         if(data && Array.isArray(data) && data.length) {
                             const chatInfo = data[0]
                             let chatArr = chatInfo && chatInfo.chats || []

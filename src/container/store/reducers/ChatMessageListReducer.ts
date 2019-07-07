@@ -37,13 +37,9 @@ const constructMessageList = (chatArr: UserChatType[]) => {
     }
     return messageData
 }
-const defaultState = {
-    chatId: '',
-    length: 0,
-    chats: new Map()
-}
-const ChatMessageListReducer = (state: any = defaultState, action: ChatMessageListAction) => {
+const ChatMessageListReducer = (state: any = new Map(), action: ChatMessageListAction) => {
     const { type } = action
+    let updatedState = new Map(state)
     switch(type) {
         case 'messageList': {
             const { data } = action
@@ -58,10 +54,11 @@ const ChatMessageListReducer = (state: any = defaultState, action: ChatMessageLi
                 chatId,
                 length
             }
-            return updatedMessageStore || new Map()
+            updatedState.set(chatId, { ...updatedMessageStore })
+            return updatedState
         }
         default:
-            return state
+            return updatedState
     }
 }
 

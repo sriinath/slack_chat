@@ -13,7 +13,6 @@ const IconWithText = (props: IconWithTextProps) => {
         isTitle,
         ...remainingProps
     } = props
-    console.log(props)
     return <IconWithTextWrapper>
         <Text text={text} isHeading={isHeading} isTitle={isTitle}/>
         <Icon {...remainingProps} />

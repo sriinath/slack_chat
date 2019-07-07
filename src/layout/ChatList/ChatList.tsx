@@ -11,6 +11,7 @@ const ChatList = (props: any) => {
             return <ListItem
                 list={chats || []}
                 Item={ChatListBlock}
+                commonProps={...props}
             />
         }}
     </UserChatListConsumer>
@@ -18,14 +19,16 @@ const ChatList = (props: any) => {
 const ChatListBlock = (props: any) => {
     const {
         recipientUserName,
-        chatId
+        chatId,
+        setCurrentChatId,
+        changePageView
     } = props
-    const clickHandler = (e: Event) => {
-        console.log(chatId)
-    }
     return (
         <ElementWithWrapper
-            clickHandler={clickHandler}
+            clickHandler={e => {
+                setCurrentChatId(chatId)
+                changePageView('chat')
+            }}
         >
             <Text isHeading={false} text={recipientUserName} />
         </ElementWithWrapper>

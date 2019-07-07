@@ -5,7 +5,7 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from './container/store/reducer'
 
-const store = createStore(reducer)
+const store = createStore(reducer, {})
 
 import { UserChatListContainer } from './container'
 import { App } from './layout'

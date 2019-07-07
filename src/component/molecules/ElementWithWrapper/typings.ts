@@ -1,6 +1,6 @@
 interface ElementWithWrapperProps {
     elementProps?: any
-    clickHandler?: (e: Event) => void
+    clickHandler?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }
 
 export { ElementWithWrapperProps }

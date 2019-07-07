@@ -14,9 +14,16 @@ interface MessageList {
     chatId: string
     chats: UserChatType[]
 }
-
+interface SearchListAction extends action {
+    data: SearchListType[]
+} 
+interface SearchListType {
+    userName: string
+}
 export {
     UserChatListAction,
     ChatMessageListAction,
-    MessageList
+    MessageList,
+    SearchListAction,
+    SearchListType
 }

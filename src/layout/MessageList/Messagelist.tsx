@@ -1,8 +1,7 @@
 import * as React from 'react'
 
-import { ListItem, Text } from '../../component'
+import { Text } from '../../component'
 import { MessageListConsumer } from '../../container'
-import { UserChatType } from '../../types'
 import {
     MessageTitleWrapper,
     MessageBlockWrapper
@@ -17,17 +16,17 @@ const MessageList = (props: any) => {
                 length
             } = context
             let ChatMessageDOM: any = []
-            chats.forEach((value, key) => {
+            chats && chats.forEach((value, key) => {
                 let UserChatsDOM: any = []
                 let PrevRecipientName = ''
-                UserChatsDOM.push(<Text text={key} isHeading={false} />)
+                UserChatsDOM.push(<Text text={key} isHeading={false} key={key} />)
                 value.forEach((timeValue, timeKey) => {
                     timeValue.map((chatData, chatKey) => {
                         const {
                             message,
                             recipientUserName
                         } = chatData
-                        UserChatsDOM.push(<MessageBlockWrapper>
+                        UserChatsDOM.push(<MessageBlockWrapper key={'chatmessage'+ timeKey + chatKey}>
                             {
                                 PrevRecipientName !== recipientUserName ? <MessageTitleWrapper>
                                     <Text
@@ -43,7 +42,6 @@ const MessageList = (props: any) => {
                                 : null
                             }
                             <Text
-                                key={'chatmessage'+ timeKey + chatKey}
                                 text={message}
                                 isHeading={false}
                             />

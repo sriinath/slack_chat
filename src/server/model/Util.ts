@@ -46,8 +46,16 @@ class Utils {
             return Promise.resolve('Colllection name is not valid string')
         }
     }
-    findData(collection: mongoDB.Collection, query: Object, limit?: number, offset?: number) {
-        return collection.find(query, { fields: {_id: 0} } )
+    createIndex(collectionName: string, query: Object) {
+        const findData = (collection: mongoDB.Collection) => {
+            return collection.createIndex(query)
+            .then(data => data)
+            .catch(err => err)
+        }
+        return this.connectDBCollection(collectionName, findData)
+    }
+    findData(collection: mongoDB.Collection, query: Object, limit?: number, offset?: number, projection?: any) {
+        return collection.find(query, { fields: projection || {_id: 0} } )
         .limit(limit)
         .skip(offset)
         .toArray()
@@ -59,12 +67,12 @@ class Utils {
             return 'An error occured while fetching collection results'
         })
     }
-    getData(collectionName: string, toFind: Object, limit?: number, offset?: number) {
+    getData(collectionName: string, toFind: Object, limit?: number, offset?: number, project?: any) {
         const limitValue = limit || 20 
         const skip = offset || 0
         // find data is a callback method
         const findData = (collection: mongoDB.Collection) => {
-            return this.findData(collection, toFind, limitValue, skip)
+            return this.findData(collection, toFind, limitValue, skip, project)
         }
         return this.connectDBCollection(collectionName, findData)
     }

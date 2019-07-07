@@ -20,7 +20,7 @@ const GroupListBlock = (props: any) => {
         groupName,
         groupId
     } = props
-    const clickHandler = (e: Event) => {
+    const clickHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         console.log(groupId)
     }    
     return (

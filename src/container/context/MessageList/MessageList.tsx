@@ -3,9 +3,10 @@ import { Utils } from '../../../util'
 
 import { connect } from 'react-redux'
 import { AppState } from '../../store/reducer'
-import { ChatMessageListAction } from '../../store/actions'
 import { DataAPI } from '../../../config'
 import { MessageListContextType } from './typings'
+import { MessageList } from '../../store/types'
+import { ChatMessageListAction } from '../../store/actions';
 
 const defaultMessageList: MessageListContextType = {
     chatId: '',
@@ -16,12 +17,13 @@ const MessageListContext = React.createContext(defaultMessageList)
 const { Consumer, Provider } = MessageListContext
 const { getChats } = DataAPI
 
-class MessageListContainer extends React.Component<any> {
-    componentDidMount() {
+class MessageListContainer extends React.PureComponent<any> {
+    getUserChats() {
+        const { chatId } = this.props
         Utils.fetchResponse(getChats, {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ 'userName': 'srinath', 'chatId': '52329' })
+            body: JSON.stringify({ 'userName': 'srinath', 'chatId': chatId })
         }, [])
         .then(resp => {
             if(resp) {
@@ -34,13 +36,33 @@ class MessageListContainer extends React.Component<any> {
         })
         .catch(err => console.log(err))
     }
+    componentDidMount() {
+        this.getUserChats()
+    }
+    componentDidUpdate(prevProps: any) {
+        const {
+            chatId,
+            data
+        } = this.props
+        if(prevProps && prevProps.chatId && chatId && prevProps.chatId !== chatId) {
+            if(data && !data.get(chatId)) {
+                this.getUserChats()
+                let updatedMessageList: MessageList = {
+                    chats: [],
+                    chatId: defaultMessageList.chatId,
+                    length: defaultMessageList.length
+                }
+                this.props.dispatch(ChatMessageListAction(updatedMessageList))
+            }
+        }
+    }
     render() {
         const {
-            data,
-            children
+            chatId,
+            children,
+            data
         } = this.props
-        console.log(data)
-        return <Provider value={data}>
+        return <Provider value={data.get(chatId) || defaultMessageList}>
             {children}
         </Provider>
     }

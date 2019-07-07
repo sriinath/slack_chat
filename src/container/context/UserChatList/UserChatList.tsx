@@ -39,7 +39,6 @@ class UserChatListContainer extends React.Component<any> {
         .catch(err => console.log(err))
     }
     render() {
-        console.log(this.props)
         const {
             data,
             children

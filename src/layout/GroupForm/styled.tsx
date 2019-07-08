@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import {
     TextElement,
     LabelEl,
@@ -76,6 +76,7 @@ const TypeAheadWrapper = styled.div`
     background: #fff;
     width: 100%;
     top: 77px;
+    display: none;
 `
 const UsersWrapper = styled.div`
     padding-top: 10px;

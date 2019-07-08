@@ -15,20 +15,22 @@ class SearchListContainer extends React.Component<any> {
     componentDidMount() {
         const { searchUsers } = DataAPI
         const { searchTerm } = this.props
-        Utils.fetchResponse(`${searchUsers}?searchTerm=${searchTerm}`)
-        .then(resp => {
-            if(resp) {
-                const { status } = resp
-                if(status.toLowerCase() === 'success') {
-                    const { data } = resp
-                    if(data && data.status && data.status.toLowerCase() === 'success') {
-                        let UserInfo =  data.data || []
-                        this.props.dispatch(SearchListAction(UserInfo))
+        if(searchTerm && searchTerm.trim().length) {
+            Utils.fetchResponse(`${searchUsers}?searchTerm=${searchTerm}`)
+            .then(resp => {
+                if(resp) {
+                    const { status } = resp
+                    if(status.toLowerCase() === 'success') {
+                        const { data } = resp
+                        if(data && data.status && data.status.toLowerCase() === 'success') {
+                            let UserInfo =  data.data || []
+                            this.props.dispatch(SearchListAction(UserInfo))
+                        }
                     }
                 }
-            }
-        })
-        .catch(err => console.log(err))
+            })
+            .catch(err => console.log(err))    
+        }
     }
     render() {
         const {

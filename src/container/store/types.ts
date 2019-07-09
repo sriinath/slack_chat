@@ -20,6 +20,7 @@ interface SearchListAction extends action {
 interface SearchListType {
     userName: string
 }
+
 export {
     UserChatListAction,
     ChatMessageListAction,

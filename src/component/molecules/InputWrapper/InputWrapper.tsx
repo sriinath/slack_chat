@@ -14,7 +14,7 @@ const InputWrapper = (props: any) => {
     } = props
     return <InputWrapperEl>
         <LabelEl htmlFor={id}>{label}</LabelEl>
-        <Input {...inputProps} />
+        <Input {...inputProps} id={id} />
     </InputWrapperEl> 
 }
 

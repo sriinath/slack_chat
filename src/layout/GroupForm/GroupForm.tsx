@@ -18,8 +18,17 @@ import {
 import { SearchListContainer, SearchListConsumer } from '../../container'
 import { useState } from 'react'
 
-const FormSubmit = (e: React.FormEvent<HTMLInputElement>) => {
-    console.log(e.currentTarget)
+const FormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const inputDOM: any = document.getElementById('channelName')
+    const groupName = inputDOM.value
+    console.log(groupName)
+    if(groupName && groupName.trim().length) {
+        console.log('success')
+    }
+    else {
+        console.log('failure')
+    }
 }
 const GroupForm = (props: any) => {
     return <GroupFormWrapper>
@@ -39,9 +48,8 @@ const FormElementDOM = (props: any) => {
     const [ searchTerm, setSearchTerm ] = useState('')
     const [ groupUsers, updateGroupUsers ] = useState([])
 
-    console.log(searchTerm)
     return <SearchListContainer searchTerm={searchTerm}>
-        <FormElement>
+        <FormElement onSubmit={FormSubmit}>
             <InputWrapper
                 placeholder={'#channel name'}
                 label='Name'
@@ -54,8 +62,8 @@ const FormElementDOM = (props: any) => {
                 groupUsers={groupUsers}
             />
             <SubmitWrapper>
-                <Input value='Submit' type='submit' onSubmit={FormSubmit} />
-                <Input value='Cancel' type='button' onSubmit={FormSubmit} />
+                <Input value='Submit' type='submit' />
+                <Input value='Cancel' type='button' />
             </SubmitWrapper>
         </FormElement>
     </SearchListContainer>
@@ -66,15 +74,22 @@ const SearchWrapperDOM = (props: any) => {
         updateGroupUsers,
         groupUsers
     } = props
-
+    let searchTextCount = 0
     return <>
         <SearchWrapperEl>
             <InputWrapper
                 placeholder={'Search By Name'}
                 label='Send Invites To: (Optional)'
                 id='groupSearch'
-                onFocus={(e: Event) => document.getElementById('typeAhead').style.display = 'block'}
-                onInput={(e: React.FormEvent<HTMLInputElement>) => updateSearch(e.currentTarget.value)}
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                    let searchText = e.currentTarget.value
+                    searchTextCount = searchText.length
+                    if(searchTextCount)
+                        document.getElementById('typeAhead').style.display = 'block'
+                    else
+                        document.getElementById('typeAhead').style.display = 'none'
+                    updateSearch(searchText)
+                }}
             />
             <SearchListConsumer>
             {context => {
@@ -86,8 +101,10 @@ const SearchWrapperDOM = (props: any) => {
                             {
                                 clickHandler: (userName: string) => {
                                     let updatedUser = [ ...groupUsers ]
-                                    updatedUser.push({ userName })
-                                    updateGroupUsers(updatedUser)
+                                    if(!updatedUser.some(user => user.userName === userName)) {
+                                        updatedUser.push({ userName })
+                                        updateGroupUsers(updatedUser)    
+                                    }
                                     document.getElementById('typeAhead').style.display = 'none'
                                 }
                             }

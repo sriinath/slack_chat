@@ -1,8 +1,9 @@
 import { Request, Response } from 'express'
 import { Util } from '../utils'
 import { ChatModel } from '../model'
-import { ChatType } from '../../types'
+import { ChatType, UserChatType } from '../../types'
 import { UserController } from '../controller'
+const uuidv1 = require('uuid/v1')
 
 class Chat {
     async getChatList(req: Request, res: Response) {
@@ -19,36 +20,6 @@ class Chat {
                 if(validChatId) {
                     ChatModel.getChatList(chatId)
                     .then(data => {
-                    //     data = [{
-                    //     chatId: '52329',
-                    //     chats: [
-                    //         { 
-                    //             recipientUserName: 'srinath',
-                    //             message: 'hello',
-                    //             time: "2019-07-05T12:07:48.891Z"
-                    //         },
-                    //         { 
-                    //             recipientUserName: 'srinath',
-                    //             message: 'hi',
-                    //             time: "2019-07-05T11:56:29.022Z" 
-                    //         },
-                    //         {
-                    //             recipientUserName: 'virat',
-                    //             message: 'hey',
-                    //             time: "2019-07-05T12:07:46.958Z"
-                    //         },
-                    //         {
-                    //             recipientUserName: 'virat',
-                    //             message: 'Whats up',
-                    //             time: "2019-07-05T12:07:44.926Z"
-                    //         },
-                    //         {
-                    //             recipientUserName: 'srinath',
-                    //             message: 'hello',
-                    //             time: "2019-07-05T11:56:25.812Z"
-                    //         }
-                    //     ]
-                    // }]
                         if(data && Array.isArray(data) && data.length) {
                             const chatInfo = data[0]
                             let chatArr = chatInfo && chatInfo.chats || []
@@ -105,6 +76,43 @@ class Chat {
             return false
         }
         return false
+    }
+    createChatId(data: UserChatType, userName: string) {
+        const {
+            recipientUserName,
+            message,
+            time
+        } = data
+        const id = uuidv1()
+        if(recipientUserName && time && message) {
+            return ChatModel.createChatId(id, data)
+            .then(chatResp => {
+                if(chatResp && chatResp.lastErrorObject) {
+                    if(chatResp.lastErrorObject.updatedExisting)
+                        return ''
+                    else if(chatResp.lastErrorObject.upserted)
+                        return id
+                }
+                else
+                    return ''
+            })
+            .catch(err => {
+                console.log(err)
+                return ''
+            })
+        }
+        return Promise.resolve('Please provide all mandatory fields')
+    }
+    addChatMessage(data: UserChatType, chatId: string) {
+        const {
+            recipientUserName,
+            time,
+            message
+        } = data
+        if(chatId && recipientUserName && message && time) {
+            return ChatModel.addChatMessage(data, chatId)
+        }
+        return Promise.resolve('Please provide all mandatory fields')
     }
 }
 

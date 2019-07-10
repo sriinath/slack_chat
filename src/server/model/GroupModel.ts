@@ -11,7 +11,7 @@ class Group {
     createGroup(toFind: any, groupData: GroupChatType) {
         return UtilModel.checkDuplicateAndUpdate(ChatListCollection, toFind, groupData)
         .then(data => data)
-        .catch(err => err)        
+        .catch(err => err)
     }
     addMembersToGroup(toFind: any, toUpdate: any) {
         if(toFind && toUpdate) {

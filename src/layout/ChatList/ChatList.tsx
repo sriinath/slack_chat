@@ -1,6 +1,9 @@
 import * as React from 'react'
 import { Text, ElementWithWrapper, ListItem } from '../../component'
-import { UserChatListConsumer } from '../../container'
+import {
+    UserChatListConsumer,
+    SocketConsumer
+} from '../../container'
 
 const ChatList = (props: any) => {
     return <UserChatListConsumer>
@@ -24,14 +27,18 @@ const ChatListBlock = (props: any) => {
         changePageView
     } = props
     return (
-        <ElementWithWrapper
-            clickHandler={e => {
-                setCurrentChatId(chatId)
-                changePageView('chat')
-            }}
-        >
-            <Text isHeading={false} text={recipientUserName} />
-        </ElementWithWrapper>
+        <SocketConsumer>
+            {socket => <ElementWithWrapper
+                clickHandler={e => {
+                    setCurrentChatId(chatId)
+                    changePageView('chat')
+                    socket.emit('user_chat', chatId)
+                }}
+            >
+                <Text isHeading={false} text={recipientUserName} />
+            </ElementWithWrapper>}
+        </SocketConsumer>
+
     )
 }
 

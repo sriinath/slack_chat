@@ -5,6 +5,9 @@ import { UserChats } from '../../types'
 const { UserListCollection } = config
 
 class User {
+    getUserInstance(cbk: Function) {
+        UtilModel.connectDBCollection(UserListCollection, cbk)
+    }
     getUserList(userName: string) {
         const toFind = { userName }
         return UtilModel.getData(UserListCollection, toFind)

@@ -4,6 +4,7 @@ import * as ReactDOM from "react-dom"
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from './container/store/reducer'
+import { SocketProvider } from './container/context/Socket'
 
 const store = createStore(reducer, {})
 
@@ -16,7 +17,9 @@ ReactDOM.render(
     <Provider store={store}>
         <Global />
         <UserChatListContainer>
-            <App />
+            <SocketProvider url='localhost:3000'>
+                <App />
+            </SocketProvider>
         </UserChatListContainer>
     </Provider>,
     document.getElementById("root")

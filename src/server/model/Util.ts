@@ -67,14 +67,14 @@ class Utils {
             return 'An error occured while fetching collection results'
         })
     }
-    getData(collectionName: string, toFind: Object, limit?: number, offset?: number, project?: any) {
-        const limitValue = limit || 20 
+    getData(collectionName: string, toFind: Object, limit?: number, offset?: number, project?: any, cbk?: Function) {
+        const limitValue = limit || 20
         const skip = offset || 0
         // find data is a callback method
         const findData = (collection: mongoDB.Collection) => {
             return this.findData(collection, toFind, limitValue, skip, project)
         }
-        return this.connectDBCollection(collectionName, findData)
+        return this.connectDBCollection(collectionName, cbk || findData)
     }
     insertData(collectionName: string, insertData: any) {
         if(collectionName) {
@@ -119,7 +119,7 @@ class Utils {
             return Promise.resolve('Collection Name is mandatory')
         }
     }
-    updateData(collectionName: string, toFind: any, updatedData: string) {
+    updateData(collectionName: string, toFind: any, updatedData: any) {
         if(collectionName) {
             return this.getCollection(collectionName)
             .then((collection: any) => {

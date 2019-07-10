@@ -4,6 +4,9 @@ import { Request, Response } from 'express'
 import { UserChats } from '../../types'
 
 class User {
+    getUserInstance(cbk: Function) {
+        return cbk && UserModel.getUserInstance(cbk)
+    }
     getUserList(req: Request, res: Response) {
         const { body } = req
         if(body) {
@@ -24,7 +27,7 @@ class User {
         if(userName) {
             return UserModel.getUserList(userName)
             .then((data: UserChats[]) => {
-                if(data){
+                if(data) {
                     if(Array.isArray(data) && data.length) {
                         return Util.returnResp(data, 'Success')
                     }

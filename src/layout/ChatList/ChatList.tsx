@@ -24,13 +24,15 @@ const ChatListBlock = (props: any) => {
         recipientUserName,
         chatId,
         setCurrentChatId,
-        changePageView
+        changePageView,
+        setRecipientName
     } = props
     return (
         <SocketConsumer>
             {socket => <ElementWithWrapper
                 clickHandler={e => {
                     setCurrentChatId(chatId)
+                    setRecipientName(recipientUserName)
                     changePageView('chat')
                     socket.emit('user_chat', chatId)
                 }}
@@ -38,7 +40,6 @@ const ChatListBlock = (props: any) => {
                 <Text isHeading={false} text={recipientUserName} />
             </ElementWithWrapper>}
         </SocketConsumer>
-
     )
 }
 

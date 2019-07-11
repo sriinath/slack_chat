@@ -3,9 +3,9 @@ import * as io from 'socket.io-client'
 
 class Socket {
     private socket: SocketIOClient.Socket
-    constructor(url?: string) {
-        if(url) {
-            this.socket = io(url, {query : `userName=srinath`})
+    constructor(url?: string, userName?: string) {
+        if(url && userName) {
+            this.socket = io(url, {query : `userName=${userName}`})
         }
     }
     get getSocket() {
@@ -17,8 +17,8 @@ const SocketContext: React.Context<SocketIOClient.Socket> = React.createContext(
 const { Provider, Consumer } = SocketContext
 
 const SocketProvider = (props: React.PropsWithChildren<any>) => {
-    const { children, url } = props
-    const socket = new Socket(url)
+    const { children, url, userName } = props
+    const socket = new Socket(url, userName)
     return (
         <Provider value={socket && socket.getSocket} >
             {children}

@@ -12,10 +12,9 @@ import {
     SubmitWrapper,
     CloseIcon,
     UsersWrapper,
-    TypeAheadWrapper,
     SearchWrapperEl
 } from './styled'
-import { SearchListContainer, SearchListConsumer } from '../../container'
+import { SearchUser } from '../SearchUser'
 import { useState } from 'react'
 
 const FormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,74 +44,49 @@ const GroupForm = (props: any) => {
         </GroupFormWrapper>
 }
 const FormElementDOM = (props: any) => {
-    const [ searchTerm, setSearchTerm ] = useState('')
     const [ groupUsers, updateGroupUsers ] = useState([])
 
-    return <SearchListContainer searchTerm={searchTerm}>
-        <FormElement onSubmit={FormSubmit}>
-            <InputWrapper
-                placeholder={'#channel name'}
-                label='Name'
-                id='channelName'
-                maxLength={22}
-            />
-            <SearchWrapperDOM
-                updateSearch={setSearchTerm}
-                updateGroupUsers={updateGroupUsers}
-                groupUsers={groupUsers}
-            />
-            <SubmitWrapper>
-                <Input value='Submit' type='submit' />
-                <Input value='Cancel' type='button' />
-            </SubmitWrapper>
-        </FormElement>
-    </SearchListContainer>
+    return <FormElement onSubmit={FormSubmit}>
+        <InputWrapper
+            placeholder={'#channel name'}
+            label='Name'
+            id='channelName'
+            maxLength={22}
+        />
+        <SearchWrapperDOM
+            updateGroupUsers={updateGroupUsers}
+            groupUsers={groupUsers}
+        />
+        <SubmitWrapper>
+            <Input value='Submit' type='submit' />
+            <Input value='Cancel' type='button' />
+        </SubmitWrapper>
+    </FormElement>
 }
 const SearchWrapperDOM = (props: any) => {
     const {
-        updateSearch,
         updateGroupUsers,
         groupUsers
     } = props
-    let searchTextCount = 0
     return <>
         <SearchWrapperEl>
-            <InputWrapper
-                placeholder={'Search By Name'}
-                label='Send Invites To: (Optional)'
-                id='groupSearch'
-                onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                    let searchText = e.currentTarget.value
-                    searchTextCount = searchText.length
-                    if(searchTextCount)
-                        document.getElementById('typeAhead').style.display = 'block'
-                    else
-                        document.getElementById('typeAhead').style.display = 'none'
-                    updateSearch(searchText)
-                }}
-            />
-            <SearchListConsumer>
-            {context => {
-                return <TypeAheadWrapper id='typeAhead'>
-                    <ListItem
-                        list={context && Array.isArray(context) && context || []}
-                        Item={UserListBlock}
-                        commonProps={
-                            {
-                                clickHandler: (userName: string) => {
-                                    let updatedUser = [ ...groupUsers ]
-                                    if(!updatedUser.some(user => user.userName === userName)) {
-                                        updatedUser.push({ userName })
-                                        updateGroupUsers(updatedUser)    
-                                    }
-                                    document.getElementById('typeAhead').style.display = 'none'
-                                }
+            <SearchUser
+                inputPlaceholder={'Search By Name'}
+                inputLabel={'Send Invites To: (Optional)'}
+                ItemBlock={UserListBlock}
+                listCommonProps={
+                    {
+                        clickHandler: (userName: string) => {
+                            let updatedUser = [ ...groupUsers ]
+                            if(!updatedUser.some(user => user.userName === userName)) {
+                                updatedUser.push({ userName })
+                                updateGroupUsers(updatedUser)
                             }
+                            document.getElementById('typeAhead').style.display = 'none'
                         }
-                    />
-                </TypeAheadWrapper>
-            }}
-            </SearchListConsumer>
+                    }
+                }
+            />
         </SearchWrapperEl>
         <UsersWrapper>
         <ListItem
@@ -144,4 +118,5 @@ const UserListBlock = (props: any) => {
         </ElementWithWrapper>
     )
 }
+
 export { GroupForm }

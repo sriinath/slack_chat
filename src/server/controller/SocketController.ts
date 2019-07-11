@@ -11,12 +11,13 @@ import {
 } from './index'
 import { SocketModel } from '../model'
 import { Collection } from "mongodb"
+import console = require("console");
 
 const uuidv1 = require('uuid/v1')
 class SocketController {
     private static socketIO: io.Server
     private socket: io.Socket
-    private userName: string = 'Anonymous'
+    private userName: string = ''
     private userData: UserChats = {
         userName: this.userName
     }
@@ -27,13 +28,22 @@ class SocketController {
     }
     socketChatEvents = () => {
         // when user adds a new chat
-        this.socket.on('user_chat', (chatId: string) => {
-            chatId && this.socket.join(chatId)
-            console.log(chatId)
+        // this.socket.on('user_chat', (recipientName: string) => {
+        //     recipientName && this.socket.join(recipientName)
+        //     console.log(recipientName)
+        // })
+        this.socket.join(this.userName)
+        this.socket.on('send_message', (data) => {
+            this.sendMessage(data)
+            SocketController.socketIO.sockets.in(this.userName).emit('newMessage', data.message)
         })
-        this.socket.on('send_message', (data) => this.sendMessage(data))
+        this.socket.on('set_chats', data => this.setUserChats(data))
+    }
+    private setUserChats = (data: ChatType[]) => {
+        this.userData.chats = data
     }
     private updateUserData = (data: ChatType) => {
+        console.log(data)
         if(!this.userData.chats) {
             this.userData.chats = [data]
         }
@@ -41,41 +51,46 @@ class SocketController {
             this.userData.chats.push(data)
         }
     }
-    // when a new message is received
     private sendMessage = (data: UserChatType) => {
         const { recipientUserName } = data
         const checkRecipient = this.userData && this.userData.chats && this.userData.chats.length ? this.userData.chats.filter(chat => chat.recipientUserName === recipientUserName) : []
-        if(checkRecipient.length) {
+        if(checkRecipient.length && checkRecipient[0] && checkRecipient[0].chatId) {
             const chatId = checkRecipient[0].chatId || ''
-            this.addUserMessage(data, chatId)
+            let postMessageAdd = this.addUserMessage(data, chatId)
+            if(postMessageAdd) {
+                this.socket.emit('message_status', 'successfully added the message')
+            }
+            else {
+                this.socket.emit('message_status', 'failed to add the message')
+            }
         }
         else {
-            console.log('New Chat User is being registered!!!')
             const identifier = uuidv1()
             const chatId = identifier.toString()
-            const createNewChat = (dbInstance: Collection) => {
-                let userChatAdd = SocketModel.createAndAddUserChatId(dbInstance, chatId, this.userName, data)
-                this.addUserMessage(data, chatId)
-                console.log(userChatAdd)
-                if(userChatAdd) {
-                    this.updateUserData({ recipientUserName, chatId })
-                    console.log('user data updated')
+            const createNewChat = async (dbInstance: Collection) => {
+                let userChatAdd = await SocketModel.createAndAddUserChatId(dbInstance, chatId, this.userName, data)
+                let chatMessage = await ChatController.createChatId(data, chatId)
+                if(userChatAdd && chatMessage) {
+                    this.socket.emit('message_status', 'successfully added the message')
                 }
-                this.socket.emit('new_chat', [])
+                else {
+                    this.socket.emit('message_status', 'failed to add the message')    
+                }
             }
             UserController.getUserInstance(createNewChat)
         }
     }
     
-    // this will be called from new message method
-    // add a users messsage to the db
     private addUserMessage = (data: UserChatType, chatId: string) => {
-        ChatController.addChatMessage(data, chatId)
+        return ChatController.addChatMessage(data, chatId)
         .then((data: any) => {
-            console.log(data)
+            if(data && data.modifiedCount) 
+                return true
+            return false
         })
         .catch((err: Error) => {
             console.log(err)
+            return false
         })
     }
 }

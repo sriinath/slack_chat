@@ -77,24 +77,23 @@ class Chat {
         }
         return false
     }
-    createChatId(data: UserChatType, userName: string) {
+    createChatId(data: UserChatType, chatId: string) {
         const {
             recipientUserName,
             message,
             time
         } = data
-        const id = uuidv1()
         if(recipientUserName && time && message) {
-            return ChatModel.createChatId(id, data)
+            return ChatModel.createChatId(chatId, data)
             .then(chatResp => {
                 if(chatResp && chatResp.lastErrorObject) {
                     if(chatResp.lastErrorObject.updatedExisting)
-                        return ''
+                        return false
                     else if(chatResp.lastErrorObject.upserted)
-                        return id
+                        return true
                 }
                 else
-                    return ''
+                    return false
             })
             .catch(err => {
                 console.log(err)
@@ -112,7 +111,9 @@ class Chat {
         if(chatId && recipientUserName && message && time) {
             return ChatModel.addChatMessage(data, chatId)
         }
-        return Promise.resolve('Please provide all mandatory fields')
+        else {
+            return Promise.resolve('Please provide all mandatory fields')
+        }
     }
 }
 

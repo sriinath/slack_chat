@@ -18,8 +18,9 @@ class Utils {
                 return db.db(dbName).collection(collectionName)
             })
             .catch((err: mongoDB.MongoError) => {
+                console.log(err)
                 return err
-            })    
+            })
         }
     }
     connectDBCollection(collectionName: string, callback: Function) {
@@ -81,10 +82,7 @@ class Utils {
             return this.getCollection(collectionName)
             .then((collection: mongoDB.Collection) => {
                 return collection.insertOne(insertData)
-                .then(data => {
-                    console.log(data)
-                    return data
-                })
+                .then(data => data)
                 .catch(err => {
                     console.log(err)
                     return 'An error occured while inserting data to db' 

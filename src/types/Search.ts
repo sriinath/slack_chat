@@ -4,5 +4,14 @@ interface SearchType {
 interface SearchData {
     data: SearchType[]
 }
-
-export { SearchData, SearchType }
+interface SearchUserProps {
+    ItemBlock: any
+    listCommonProps: any
+    inputPlaceholder: string
+    inputLabel: string
+}
+export {
+    SearchData,
+    SearchType,
+    SearchUserProps
+}

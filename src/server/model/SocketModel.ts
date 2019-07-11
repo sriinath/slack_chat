@@ -1,14 +1,15 @@
 import { UtilModel } from './Util'
 import { Collection } from 'mongodb'
 import { UserChatType } from '../../types'
+import console = require('console');
 
 class Socket {
     createAndAddUserChatId = (dbInstance: Collection, chatId: string, userName: string, data: UserChatType) => {
         const {
             recipientUserName
         } = data
-        const toFind = { recipientUserName }
-        return UtilModel.findData(dbInstance, toFind)
+        const toFind = { userName: recipientUserName }
+        return UtilModel.findData(dbInstance, toFind, 10, 0)
         .then(data => {
             if(data && Array.isArray(data) && data.length) {
                 const toFindSender = { userName, 'chats.recipientUserName': { $nin: [ recipientUserName ] } }
@@ -20,7 +21,6 @@ class Socket {
                 bulkOp.find( toFindRecipient ).update( toUpdateRecipient )
                 return bulkOp.execute()
                 .then(data => {
-                    console.log(data)
                     return true
                 })
                 .catch(err => {

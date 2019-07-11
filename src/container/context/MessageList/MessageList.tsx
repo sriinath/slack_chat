@@ -19,40 +19,37 @@ const { getChats } = DataAPI
 
 class MessageListContainer extends React.PureComponent<any> {
     getUserChats() {
-        const { chatId } = this.props
-        Utils.fetchResponse(getChats, {
-            method: 'post',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ 'userName': 'srinath', 'chatId': chatId })
-        }, [])
-        .then(resp => {
-            if(resp) {
-                const { status } = resp
-                if(status.toLowerCase() === 'success') {
-                    const { data } = resp
-                    this.props.dispatch(ChatMessageListAction(data && data.data || {}))
+        const { chatId, userName } = this.props
+        if(chatId && userName) {
+            Utils.fetchResponse(getChats, {
+                method: 'post',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ userName, chatId })
+            }, [])
+            .then(resp => {
+                if(resp) {
+                    const { status } = resp
+                    if(status.toLowerCase() === 'success') {
+                        const { data } = resp
+                        this.props.dispatch(ChatMessageListAction(data && data.data || {}))
+                    }
                 }
-            }
-        })
-        .catch(err => console.log(err))
-    }
-    componentDidMount() {
-        this.getUserChats()
+            })
+            .catch(err => console.log(err))    
+        }
     }
     componentDidUpdate(prevProps: any) {
         const {
             chatId,
             data
         } = this.props
-        if(prevProps && prevProps.chatId && chatId && prevProps.chatId !== chatId) {
-            if(data && !data.get(chatId)) {
-                this.getUserChats()
-                let updatedMessageList: MessageList = {
-                    chats: [],
-                    chatId: defaultMessageList.chatId,
-                    length: defaultMessageList.length
-                }
-                this.props.dispatch(ChatMessageListAction(updatedMessageList))
+        const chatData = data.get(chatId)
+        if(prevProps && (!prevProps.chatId || (prevProps.chatId && chatId && prevProps.chatId !== chatId)) && data) {
+            if(!chatData) {
+                this.getUserChats()    
+            }
+            else {
+                this.props.dispatch(ChatMessageListAction(chatData))    
             }
         }
     }

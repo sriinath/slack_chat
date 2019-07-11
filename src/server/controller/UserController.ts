@@ -2,6 +2,7 @@ import { UserModel } from '../model'
 import { Util } from '../utils'
 import { Request, Response } from 'express'
 import { UserChats } from '../../types'
+import console = require('console');
 
 class User {
     getUserInstance(cbk: Function) {
@@ -13,7 +14,19 @@ class User {
             const { userName } = body
             console.log(userName)
             this.fetchUserList(userName)
-            .then(userResp => res.send(userResp))
+            .then(userResp => {
+                if(userResp && userResp.data && Array.isArray(userResp.data) && userResp.data.length) {
+                    res.send(userResp)
+                }
+                else {
+                    UserModel.createUser(userName)
+                    .then(data => res.send(Util.returnResp(data, 'Success')))
+                    .catch(err => {
+                        console.log(err)
+                        res.send(Util.returnResp([], 'Failure', 500, 'There was some Error while retreiving data'))        
+                    })
+                }
+            })
             .catch(err => {
                 console.log(err)
                 res.send(Util.returnResp([], 'Failure', 500, 'There was some Error while retreiving data'))

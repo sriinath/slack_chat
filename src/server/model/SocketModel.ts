@@ -4,10 +4,8 @@ import { UserChatType } from '../../types'
 import console = require('console');
 
 class Socket {
-    createAndAddUserChatId = (dbInstance: Collection, chatId: string, userName: string, data: UserChatType) => {
-        const {
-            recipientUserName
-        } = data
+    createAndAddUserChatId = (dbInstance: Collection, chatId: string, recipientUserName: string, data: UserChatType) => {
+        const userName = data.recipientUserName || ''
         const toFind = { userName: recipientUserName }
         return UtilModel.findData(dbInstance, toFind, 10, 0)
         .then(data => {

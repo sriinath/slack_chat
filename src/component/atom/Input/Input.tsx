@@ -17,10 +17,13 @@ const Input = (props: InputProps) => {
         onSubmit,
         maxLength,
         minLength,
+        reset,
         ...remainingHandlers
     } = props
     const [ curValue, setValue ] = useState(value || '')
-
+    if(reset && curValue.trim().length) {
+        setValue('')
+    }
     return (
         <InputBox
             id={id}

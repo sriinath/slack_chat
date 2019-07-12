@@ -1,4 +1,4 @@
-import { MessageList } from '../types'
+import { MessageList, UpdateMessageList } from '../types'
 
 const ChatMessageListAction = (action: MessageList) => {
     return {
@@ -6,5 +6,11 @@ const ChatMessageListAction = (action: MessageList) => {
         data: action
     }
 }
+const UpdateMessageListAction = (action: UpdateMessageList) => {
+    return {
+        type: 'updateMessages',
+        data: action
+    }
+}
 
-export { ChatMessageListAction }
+export { ChatMessageListAction, UpdateMessageListAction }

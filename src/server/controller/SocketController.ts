@@ -33,9 +33,14 @@ class SocketController {
         //     console.log(recipientName)
         // })
         this.socket.join(this.userName)
-        this.socket.on('send_message', (data) => {
-            this.sendMessage(data)
-            SocketController.socketIO.sockets.in(this.userName).emit('newMessage', data.message)
+        this.socket.on('send_message', async (data, recipientUserName) => {
+            let messageStatus = await this.sendMessage(data, recipientUserName)
+            if(messageStatus) {
+                SocketController.socketIO.sockets.in(recipientUserName).emit('newMessage', data, messageStatus, recipientUserName)
+                SocketController.socketIO.sockets.in(this.userName).emit('message_status', data, messageStatus, recipientUserName)
+            }
+            else
+                SocketController.socketIO.sockets.in(this.userName).emit('message_status', data, messageStatus, recipientUserName)
         })
         this.socket.on('set_chats', data => this.setUserChats(data))
     }
@@ -51,31 +56,26 @@ class SocketController {
             this.userData.chats.push(data)
         }
     }
-    private sendMessage = (data: UserChatType) => {
-        const { recipientUserName } = data
+    private sendMessage = async (data: UserChatType, recipientUserName: string) => {
         const checkRecipient = this.userData && this.userData.chats && this.userData.chats.length ? this.userData.chats.filter(chat => chat.recipientUserName === recipientUserName) : []
         if(checkRecipient.length && checkRecipient[0] && checkRecipient[0].chatId) {
             const chatId = checkRecipient[0].chatId || ''
-            let postMessageAdd = this.addUserMessage(data, chatId)
+            let postMessageAdd = await this.addUserMessage(data, chatId)
             if(postMessageAdd) {
-                this.socket.emit('message_status', 'successfully added the message')
+                return chatId
             }
-            else {
-                this.socket.emit('message_status', 'failed to add the message')
-            }
+            return ''
         }
         else {
             const identifier = uuidv1()
             const chatId = identifier.toString()
             const createNewChat = async (dbInstance: Collection) => {
-                let userChatAdd = await SocketModel.createAndAddUserChatId(dbInstance, chatId, this.userName, data)
+                let userChatAdd = await SocketModel.createAndAddUserChatId(dbInstance, chatId, recipientUserName, data)
                 let chatMessage = await ChatController.createChatId(data, chatId)
                 if(userChatAdd && chatMessage) {
-                    this.socket.emit('message_status', 'successfully added the message')
+                    return chatId
                 }
-                else {
-                    this.socket.emit('message_status', 'failed to add the message')    
-                }
+                return '' 
             }
             UserController.getUserInstance(createNewChat)
         }

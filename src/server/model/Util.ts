@@ -121,7 +121,7 @@ class Utils {
         if(collectionName) {
             return this.getCollection(collectionName)
             .then((collection: any) => {
-                return collection.updateOne(toFind, updatedData)
+                return collection.updateMany(toFind, updatedData, { multi: true })
                 .then((data: any) => data)
                 .catch((err: mongoDB.MongoError) => {
                     console.log(err)

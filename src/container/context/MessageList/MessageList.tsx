@@ -6,7 +6,9 @@ import { AppState } from '../../store/reducer'
 import { DataAPI } from '../../../config'
 import { MessageListContextType } from './typings'
 import { MessageList } from '../../store/types'
-import { ChatMessageListAction } from '../../store/actions';
+import { ChatMessageListAction, UpdateMessageListAction } from '../../store/actions';
+
+import { SocketContext } from '../Socket'
 
 const defaultMessageList: MessageListContextType = {
     chatId: '',
@@ -18,6 +20,7 @@ const { Consumer, Provider } = MessageListContext
 const { getChats } = DataAPI
 
 class MessageListContainer extends React.PureComponent<any> {
+    static contextType = SocketContext
     getUserChats() {
         const { chatId, userName } = this.props
         if(chatId && userName) {
@@ -38,6 +41,20 @@ class MessageListContainer extends React.PureComponent<any> {
             .catch(err => console.log(err))    
         }
     }
+    updateMessageList(data: any, chatId: string) {
+        data.chatId = chatId
+        this.props.dispatch(UpdateMessageListAction(data))
+    }
+    componentDidMount() {
+        this.context.on('newMessage', (data: any, chatId: string, recipientUserName: string) => {
+            data.chatId = chatId
+            this.props.dispatch(UpdateMessageListAction(data))
+        })
+        this.context.on('message_status', (data: any, chatId: string) => {
+            data.chatId = chatId
+            this.props.dispatch(UpdateMessageListAction(data))
+        })
+    }
     componentDidUpdate(prevProps: any) {
         const {
             chatId,
@@ -46,7 +63,7 @@ class MessageListContainer extends React.PureComponent<any> {
         const chatData = data.get(chatId)
         if(prevProps && (!prevProps.chatId || (prevProps.chatId && chatId && prevProps.chatId !== chatId)) && data) {
             if(!chatData) {
-                this.getUserChats()    
+                this.getUserChats()
             }
             else {
                 this.props.dispatch(ChatMessageListAction(chatData))    
@@ -59,6 +76,7 @@ class MessageListContainer extends React.PureComponent<any> {
             children,
             data
         } = this.props
+        console.log(data)
         return <Provider value={data.get(chatId) || defaultMessageList}>
             {children}
         </Provider>

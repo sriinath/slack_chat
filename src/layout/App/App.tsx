@@ -44,6 +44,7 @@ const App = (props: any) => {
                                 />
                                 <MessageListContainer chatId={chatId} userName={userName}>
                                     <MainPanel
+                                        userName={userName}
                                         recipientUserName={recipientName}
                                         currentPage={currenPage}
                                         findUserChats={(userName: string) => {

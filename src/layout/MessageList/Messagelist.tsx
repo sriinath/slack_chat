@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useState } from 'react'
 import {
     Text,
     Input,
@@ -14,35 +15,33 @@ import {
 } from './styled'
 
 const UserMessageWrapper = (props: any) => {
-    const { socket, recipientUserName } = props
+    const { socket, recipientUserName, userName } = props
+
     return  <MessageSubmitCont
         onSubmit={e => {
             e.preventDefault()
             console.log(recipientUserName)
             let MessageDom: any = document.getElementById('messageInput')
             let messageStoreData = {
-                recipientUserName,
+                recipientUserName: userName,
                 message: MessageDom.value,
                 time: new Date().toISOString()
             }
-            socket.emit('send_message', messageStoreData)
-            console.log(MessageDom.value)
-            MessageDom.value=''
+            socket.emit('send_message', messageStoreData, recipientUserName)
         }}
     >
-        <InputWrapper placeholder='Jot Something Down' id='messageInput' />
+        <InputWrapper
+            placeholder='Jot Something Down'
+            id='messageInput'
+        />
         <Input type='submit' value='SEND' />
     </MessageSubmitCont>
 }
 
 class MessageList extends React.Component<any> {
     static contextType = SocketContext
-    componentDidMount() {
-        this.context.on('newMessage', (data: any) => console.log(data))
-        this.context.on('message_status', (data: any) => console.log(data))
-    }
     render() {
-        const { recipientUserName } = this.props
+        const { recipientUserName, userName } = this.props
         return <MessageListCont>
             <MessageListConsumer>
             {context => {
@@ -92,6 +91,7 @@ class MessageList extends React.Component<any> {
                     <UserMessageWrapper
                         socket={this.context}
                         recipientUserName={recipientUserName}
+                        userName={userName}
                     />
                 </MessageCont>
             }}

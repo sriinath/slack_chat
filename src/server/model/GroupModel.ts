@@ -1,6 +1,8 @@
 import { UtilModel } from './Util'
 import { config } from '../config'
 import { GroupChatType } from '../../types'
+import { Collection } from 'mongodb';
+import console = require('console');
 
 const {
     ChatListCollection,
@@ -15,7 +17,21 @@ class Group {
     }
     addMembersToGroup(toFind: any, toUpdate: any) {
         if(toFind && toUpdate) {
-            return UtilModel.updateData(UserListCollection, toFind, toUpdate)
+            const cbk = (dbInstance: Collection) => {
+                const bulkOp = dbInstance.initializeUnorderedBulkOp()
+                toFind.map((query: string) => bulkOp.find( { userName: query } ).update( toUpdate ))
+                return bulkOp.execute()
+                .then(data => {
+                    console.log(data)
+                    return true
+                })
+                .catch(err => {
+                    console.log(err)
+                    return false
+                })
+            }
+            return UtilModel.connectDBCollection(UserListCollection, cbk)    
+            // return UtilModel.updateData(UserListCollection, toFind, toUpdate)
         }
     }
     checkGroupExists(toFind: any) {

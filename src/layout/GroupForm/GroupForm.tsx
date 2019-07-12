@@ -16,13 +16,30 @@ import {
 } from './styled'
 import { SearchUser } from '../SearchUser'
 import { useState } from 'react'
+import { DataAPI } from '../../config'
+import { Utils } from '../../util'
 
-const FormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+const FormSubmit = (users: {userName: string}[], userName: string) => {
     const inputDOM: any = document.getElementById('channelName')
     const groupName = inputDOM.value
     console.log(groupName)
     if(groupName && groupName.trim().length) {
+        let postBody: any = {
+            groupName,
+            userName,
+            users: [userName]
+        }
+        const { createGroup } = DataAPI
+        if(users.length) {
+            users.map(user => postBody.users.push(user.userName))
+        }
+        Utils.fetchResponse(createGroup, {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(postBody)
+        }, [])
+        .then(data => console.log(data))
+        .catch(err => console.log(err))
         console.log('success')
     }
     else {
@@ -30,6 +47,7 @@ const FormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     }
 }
 const GroupForm = (props: any) => {
+    const { userName } = props
     return <GroupFormWrapper>
             <Text
                 text={'Create a Channel'}
@@ -40,13 +58,17 @@ const GroupForm = (props: any) => {
                 text={"Channels are where your members communicate. They're best when organized around a topic."}
                 isHeading={false}
             />
-            <FormElementDOM />
+            <FormElementDOM userName={userName} />
         </GroupFormWrapper>
 }
 const FormElementDOM = (props: any) => {
+    const { userName } = props
     const [ groupUsers, updateGroupUsers ] = useState([])
 
-    return <FormElement onSubmit={FormSubmit}>
+    return <FormElement onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault()
+            FormSubmit(groupUsers, userName)
+        }}>
         <InputWrapper
             placeholder={'#channel name'}
             label='Name'

@@ -22,7 +22,6 @@ class Group {
                 toFind.map((query: string) => bulkOp.find( { userName: query } ).update( toUpdate ))
                 return bulkOp.execute()
                 .then(data => {
-                    console.log(data)
                     return true
                 })
                 .catch(err => {

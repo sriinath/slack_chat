@@ -79,8 +79,6 @@ class Group {
                 if(data && Array.isArray(data) && data.length) {
                     return GroupModel.checkMemberInGroup(toFind)
                     .then(data => {
-                        console.log(toFind)
-                        console.log(data)
                         if(data && Array.isArray(data) && data.length) {
                             data.map((userData: any, key: number) => {
                                 const groupData = userData && userData.groups && userData.groups.filter((group: any) => group.groupName === groupName)
@@ -95,22 +93,11 @@ class Group {
                             else {
                                 return GroupModel.addMembersToGroup(users, toUpdate)
                                 .then(data => {
-                                    console.log(data)
-                                    if(data && data.result) {
-                                        if(data.result.n) {
-                                            if(data.result.n && data.result.nModified) {
-                                                return (Util.returnResp([], 'Success', 200, 'Member Successfully added to the Group'))
-                                            }
-                                            else if(data.result.n && !data.result.nModified) {
-                                                return (Util.returnResp([], 'Failure', 200, 'Cannot add the memebr to the group at this moment'))
-                                            }    
-                                        }
-                                        else {
-                                            return (Util.returnResp([], 'Failure', 200, 'Cannot Find the member with userid provided'))
-                                        }
+                                    if(data) {
+                                        return (Util.returnResp({ ...groupCheck }, 'Success', 200, 'Member Successfully added to the Group'))
                                     }
                                     else {
-                                        return (Util.returnResp([], 'Failure', 200, 'Something wrong while connecting Db'))
+                                        return (Util.returnResp([], 'Failure', 200, 'Something wrong while adding to db'))
                                     }
                                 })
                                 .catch(err => {

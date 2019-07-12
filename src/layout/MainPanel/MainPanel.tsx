@@ -13,7 +13,7 @@ const renderCurrentPage = (props: MainPanelProps) => {
         userName
     } = props
     switch(currentPage) {
-        case 'form': return <GroupForm userName={userName} />
+        case 'form': return <GroupForm userName={userName} showUserMessage={findUserChats} />
         case 'search': return <FindUser showUserMessage={findUserChats} />
         default: return <MessageList recipientUserName={recipientUserName} userName={userName} />
     }

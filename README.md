@@ -43,3 +43,6 @@ Server Side
 
     Use `npm start` to start the client side
     Use `npm run server` to start the server
+
+    Run the file with queryparam userName:
+    ```http://localhost:8080/?userName=srinath```

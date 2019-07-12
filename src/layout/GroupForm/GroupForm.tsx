@@ -19,7 +19,7 @@ import { useState } from 'react'
 import { DataAPI } from '../../config'
 import { Utils } from '../../util'
 
-const FormSubmit = (users: {userName: string}[], userName: string) => {
+const FormSubmit = (users: {userName: string}[], userName: string, showUserMessage: any) => {
     const inputDOM: any = document.getElementById('channelName')
     const groupName = inputDOM.value
     console.log(groupName)
@@ -38,16 +38,22 @@ const FormSubmit = (users: {userName: string}[], userName: string) => {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(postBody)
         }, [])
-        .then(data => console.log(data))
+        .then(data => {
+            if(data && data.status && data.status.toLowerCase() === 'success') {
+                const groupId = data.data && data.data.groupId || ''
+                // showUserMessage(groupId)
+            }
+            else {
+
+            }
+        })
         .catch(err => console.log(err))
-        console.log('success')
     }
     else {
         console.log('failure')
     }
 }
 const GroupForm = (props: any) => {
-    const { userName } = props
     return <GroupFormWrapper>
             <Text
                 text={'Create a Channel'}
@@ -58,16 +64,16 @@ const GroupForm = (props: any) => {
                 text={"Channels are where your members communicate. They're best when organized around a topic."}
                 isHeading={false}
             />
-            <FormElementDOM userName={userName} />
+            <FormElementDOM {...props} />
         </GroupFormWrapper>
 }
 const FormElementDOM = (props: any) => {
-    const { userName } = props
+    const { userName, showUserMessage } = props
     const [ groupUsers, updateGroupUsers ] = useState([])
 
     return <FormElement onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault()
-            FormSubmit(groupUsers, userName)
+            FormSubmit(groupUsers, userName, showUserMessage)
         }}>
         <InputWrapper
             placeholder={'#channel name'}
@@ -81,7 +87,7 @@ const FormElementDOM = (props: any) => {
         />
         <SubmitWrapper>
             <Input value='Submit' type='submit' />
-            <Input value='Cancel' type='button' />
+            {/* <Input value='Cancel' type='button' /> */}
         </SubmitWrapper>
     </FormElement>
 }

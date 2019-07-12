@@ -5,7 +5,7 @@ interface InputProps {
     id?: string
     maxLength?: number
     minLength?: number
-
+    reset?: boolean
     onSubmit?: (e: React.FormEvent<HTMLInputElement>) => void
 }
 

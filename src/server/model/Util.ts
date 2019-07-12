@@ -18,8 +18,9 @@ class Utils {
                 return db.db(dbName).collection(collectionName)
             })
             .catch((err: mongoDB.MongoError) => {
+                console.log(err)
                 return err
-            })    
+            })
         }
     }
     connectDBCollection(collectionName: string, callback: Function) {
@@ -67,24 +68,21 @@ class Utils {
             return 'An error occured while fetching collection results'
         })
     }
-    getData(collectionName: string, toFind: Object, limit?: number, offset?: number, project?: any) {
-        const limitValue = limit || 20 
+    getData(collectionName: string, toFind: Object, limit?: number, offset?: number, project?: any, cbk?: Function) {
+        const limitValue = limit || 20
         const skip = offset || 0
         // find data is a callback method
         const findData = (collection: mongoDB.Collection) => {
             return this.findData(collection, toFind, limitValue, skip, project)
         }
-        return this.connectDBCollection(collectionName, findData)
+        return this.connectDBCollection(collectionName, cbk || findData)
     }
     insertData(collectionName: string, insertData: any) {
         if(collectionName) {
             return this.getCollection(collectionName)
             .then((collection: mongoDB.Collection) => {
                 return collection.insertOne(insertData)
-                .then(data => {
-                    console.log(data)
-                    return data
-                })
+                .then(data => data)
                 .catch(err => {
                     console.log(err)
                     return 'An error occured while inserting data to db' 
@@ -119,11 +117,11 @@ class Utils {
             return Promise.resolve('Collection Name is mandatory')
         }
     }
-    updateData(collectionName: string, toFind: any, updatedData: string) {
+    updateData(collectionName: string, toFind: any, updatedData: any) {
         if(collectionName) {
             return this.getCollection(collectionName)
             .then((collection: any) => {
-                return collection.updateOne(toFind, updatedData)
+                return collection.updateMany(toFind, updatedData, { multi: true })
                 .then((data: any) => data)
                 .catch((err: mongoDB.MongoError) => {
                     console.log(err)

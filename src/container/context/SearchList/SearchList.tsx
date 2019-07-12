@@ -12,23 +12,31 @@ const SearchListContext = React.createContext(defaultSearchListContext)
 const { Consumer, Provider } = SearchListContext
 
 class SearchListContainer extends React.Component<any> {
-    componentDidMount() {
+    componentDidUpdate(prevProps :any) {
         const { searchUsers } = DataAPI
         const { searchTerm } = this.props
-        Utils.fetchResponse(`${searchUsers}?searchTerm=${searchTerm}`)
-        .then(resp => {
-            if(resp) {
-                const { status } = resp
-                if(status.toLowerCase() === 'success') {
-                    const { data } = resp
-                    if(data && data.status && data.status.toLowerCase() === 'success') {
-                        let UserInfo =  data.data || []
-                        this.props.dispatch(SearchListAction(UserInfo))
+        const prevSearchTerm = prevProps && prevProps.searchTerm || ''
+        if(searchTerm && searchTerm !== prevSearchTerm) {
+            if(searchTerm.trim().length) {
+                Utils.fetchResponse(`${searchUsers}?searchTerm=${searchTerm}`)
+                .then(resp => {
+                    if(resp) {
+                        const { status } = resp
+                        if(status.toLowerCase() === 'success') {
+                            const { data } = resp
+                            if(data && data.status && data.status.toLowerCase() === 'success') {
+                                let UserInfo =  data.data || []
+                                this.props.dispatch(SearchListAction(UserInfo))
+                            }
+                        }
                     }
-                }
+                })
+                .catch(err => console.log(err))    
             }
-        })
-        .catch(err => console.log(err))
+            else {
+                this.props.dispatch(SearchListAction([]))
+            }
+        }
     }
     render() {
         const {

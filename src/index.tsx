@@ -7,7 +7,6 @@ import reducer from './container/store/reducer'
 
 const store = createStore(reducer, {})
 
-import { UserChatListContainer } from './container'
 import { App } from './layout'
 
 import { Global } from './common'
@@ -15,9 +14,7 @@ import { Global } from './common'
 ReactDOM.render(
     <Provider store={store}>
         <Global />
-        <UserChatListContainer>
-            <App />
-        </UserChatListContainer>
+        <App />
     </Provider>,
     document.getElementById("root")
 )

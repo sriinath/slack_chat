@@ -7,7 +7,8 @@ import {
     UserRoute,
     GroupRoute
 } from './routes'
-import console = require("console");
+
+const socketInit = require('./socket')
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -24,6 +25,8 @@ app.use('/chat/', ChatRoute)
 app.use('/user/', UserRoute)
 app.use('/group/', GroupRoute)
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
     console.log('app started')
 });
+
+socketInit(server)

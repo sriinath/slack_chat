@@ -1,6 +1,6 @@
 import { SearchListType } from '../types'
 
-const SearchListAction = (action: SearchListType) => {
+const SearchListAction = (action: SearchListType[]) => {
     return {
         type: 'searchList',
         data: action

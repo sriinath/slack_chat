@@ -12,14 +12,46 @@ import {
     SubmitWrapper,
     CloseIcon,
     UsersWrapper,
-    TypeAheadWrapper,
     SearchWrapperEl
 } from './styled'
-import { SearchListContainer, SearchListConsumer } from '../../container'
+import { SearchUser } from '../SearchUser'
 import { useState } from 'react'
+import { DataAPI } from '../../config'
+import { Utils } from '../../util'
 
-const FormSubmit = (e: React.FormEvent<HTMLInputElement>) => {
-    console.log(e.currentTarget)
+const FormSubmit = (users: {userName: string}[], userName: string, showUserMessage: any) => {
+    const inputDOM: any = document.getElementById('channelName')
+    const groupName = inputDOM.value
+    console.log(groupName)
+    if(groupName && groupName.trim().length) {
+        let postBody: any = {
+            groupName,
+            userName,
+            users: [userName]
+        }
+        const { createGroup } = DataAPI
+        if(users.length) {
+            users.map(user => postBody.users.push(user.userName))
+        }
+        Utils.fetchResponse(createGroup, {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(postBody)
+        }, [])
+        .then(data => {
+            if(data && data.status && data.status.toLowerCase() === 'success') {
+                const groupId = data.data && data.data.groupId || ''
+                // showUserMessage(groupId)
+            }
+            else {
+
+            }
+        })
+        .catch(err => console.log(err))
+    }
+    else {
+        console.log('failure')
+    }
 }
 const GroupForm = (props: any) => {
     return <GroupFormWrapper>
@@ -32,75 +64,74 @@ const GroupForm = (props: any) => {
                 text={"Channels are where your members communicate. They're best when organized around a topic."}
                 isHeading={false}
             />
-            <FormElementDOM />
+            <FormElementDOM {...props} />
         </GroupFormWrapper>
 }
 const FormElementDOM = (props: any) => {
-    const [ searchTerm, setSearchTerm ] = useState('s')
+    const { userName, showUserMessage } = props
     const [ groupUsers, updateGroupUsers ] = useState([])
-    const [ showTypeAhead, setTypeAhead ] = useState(true)
 
-    return <SearchListContainer searchTerm={searchTerm}>
-        <FormElement>
-            <InputWrapper
-                placeholder={'#channel name'}
-                label='Name'
-                id='channelName'
-                maxLength={22}
-            />
-            <SearchWrapperEl>
-                <InputWrapper
-                    placeholder={'Search By Name'}
-                    label='Send Invites To: (Optional)'
-                    id='groupSearch'
-                    // onFocus={(e: Event) => setTypeAhead(true)}
-                    // onBlur={(e: Event) => setTypeAhead(false)}
-                />
-                {
-                    showTypeAhead ? <SearchListConsumer>
-                        {context => {
-                            return <TypeAheadWrapper>
-                                <ListItem
-                                    list={context}
-                                    Item={UserListBlock}
-                                    commonProps={
-                                        {
-                                            clickHandler: (userName: string) => {
-                                                let updatedUser = [ ...groupUsers ]
-                                                updatedUser.push({ userName })
-                                                console.log(updatedUser)
-                                                updateGroupUsers(updatedUser)
-                                            }
-                                        }
-                                    }
-                                />
-                            </TypeAheadWrapper>
-                        }}
-                    </SearchListConsumer> : null
-                }
-            </SearchWrapperEl>
-            <UsersWrapper>
-                <ListItem
-                    list={groupUsers}
-                    Item={UserListBlock}
-                    commonProps={
-                        {
-                            iconNeeded: true,
-                            clickHandler: (userName: string) => {
-                                let curUserIdx = groupUsers.indexOf({ userName })
-                                let updatedUserData = groupUsers.splice(curUserIdx, 1)
-                                updateGroupUsers(updatedUserData)
+    return <FormElement onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault()
+            FormSubmit(groupUsers, userName, showUserMessage)
+        }}>
+        <InputWrapper
+            placeholder={'#channel name'}
+            label='Name'
+            id='channelName'
+            maxLength={22}
+        />
+        <SearchWrapperDOM
+            updateGroupUsers={updateGroupUsers}
+            groupUsers={groupUsers}
+        />
+        <SubmitWrapper>
+            <Input value='Submit' type='submit' />
+            {/* <Input value='Cancel' type='button' /> */}
+        </SubmitWrapper>
+    </FormElement>
+}
+const SearchWrapperDOM = (props: any) => {
+    const {
+        updateGroupUsers,
+        groupUsers
+    } = props
+    return <>
+        <SearchWrapperEl>
+            <SearchUser
+                inputPlaceholder={'Search By Name'}
+                inputLabel={'Send Invites To: (Optional)'}
+                ItemBlock={UserListBlock}
+                listCommonProps={
+                    {
+                        clickHandler: (userName: string) => {
+                            let updatedUser = [ ...groupUsers ]
+                            if(!updatedUser.some(user => user.userName === userName)) {
+                                updatedUser.push({ userName })
+                                updateGroupUsers(updatedUser)
                             }
+                            document.getElementById('typeAhead').style.display = 'none'
                         }
                     }
-                />
-            </UsersWrapper>
-            <SubmitWrapper>
-                <Input value='Submit' type='submit' onSubmit={FormSubmit} />
-                <Input value='Cancel' type='button' onSubmit={FormSubmit} />
-            </SubmitWrapper>
-        </FormElement>
-    </SearchListContainer>
+                }
+            />
+        </SearchWrapperEl>
+        <UsersWrapper>
+        <ListItem
+            list={groupUsers}
+            Item={UserListBlock}
+            commonProps={
+                {
+                    iconNeeded: true,
+                    clickHandler: (userName: string) => {
+                        let updatedUserData = groupUsers.filter((user: any) => user.userName !== userName)
+                        updateGroupUsers(updatedUserData)
+                    }
+                }
+            }
+        />
+        </UsersWrapper>
+    </>
 }
 const UserListBlock = (props: any) => {
     const {
@@ -115,4 +146,5 @@ const UserListBlock = (props: any) => {
         </ElementWithWrapper>
     )
 }
+
 export { GroupForm }

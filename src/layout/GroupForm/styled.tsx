@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import {
     TextElement,
     LabelEl,
@@ -66,17 +66,6 @@ const CloseIcon = styled.div`
         content: '\f00d'
     }
 `
-const TypeAheadWrapper = styled.div`
-    border: 2px solid #a7a7a7;
-    padding: 5px;
-    box-sizing: border-box;
-    max-height: 200px;
-    overflow-y: auto;
-    position: absolute;
-    background: #fff;
-    width: 100%;
-    top: 77px;
-`
 const UsersWrapper = styled.div`
     padding-top: 10px;
     ${ListWrapper} {
@@ -102,6 +91,5 @@ export {
     SubmitWrapper,
     CloseIcon,
     UsersWrapper,
-    TypeAheadWrapper,
     SearchWrapperEl
 }

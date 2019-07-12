@@ -21,6 +21,8 @@ const Global = createGlobalStyle`
         margin: 0px;
     }
     #root {
+        color: #444;
+        font-family: sans-serif;
         position: absolute;
         top: 0px;
         left: 0px;

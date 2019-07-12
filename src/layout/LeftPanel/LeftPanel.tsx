@@ -16,16 +16,14 @@ const LeftPanel = (props: LeftPanelProps) => {
             <IconWithText
                 text='Channels'
                 isHeading={false}
-                isTitle={true}
                 content="f055"
             />
         </ElementWithWrapper>
         <GroupList {...props} />
-        <ElementWithWrapper clickHandler={e => changePageView('form')}>
+        <ElementWithWrapper clickHandler={e => changePageView('search')}>
             <IconWithText
                 text='Direct Message'
                 isHeading={false}
-                isTitle={true}
                 content='f055'
             />
         </ElementWithWrapper>

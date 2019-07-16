@@ -18,11 +18,13 @@ import { SearchUser } from '../SearchUser'
 import { useState } from 'react'
 import { DataAPI } from '../../config'
 import { Utils } from '../../util'
+import { UserChatListConsumer } from '../../container'
+import { AppConsumer, AppContextProps } from '../context'
 
-const FormSubmit = (users: {userName: string}[], userName: string, showUserMessage: any) => {
+const FormSubmit = (users: {userName: string}[], context: AppContextProps, updateGroup: any) => {
     const inputDOM: any = document.getElementById('channelName')
     const groupName = inputDOM.value
-    console.log(groupName)
+    const { userName } = context
     if(groupName && groupName.trim().length) {
         let postBody: any = {
             groupName,
@@ -40,11 +42,20 @@ const FormSubmit = (users: {userName: string}[], userName: string, showUserMessa
         }, [])
         .then(data => {
             if(data && data.status && data.status.toLowerCase() === 'success') {
-                const groupId = data.data && data.data.groupId || ''
-                // showUserMessage(groupId)
+                const groupId = data.data && data.data.data && data.data.data.groupId || ''
+                updateGroup && updateGroup({ groupName, groupId })
+                const {
+                    updateChatId,
+                    updateRecipientUserName,
+                    updateCurrentPage,
+                    currentPage
+                } = context
+                updateChatId(groupId)
+                updateRecipientUserName('')
+                currentPage !== 'group' && updateCurrentPage('group')
             }
             else {
-
+                console.log('there was some error while creating group')
             }
         })
         .catch(err => console.log(err))
@@ -68,28 +79,36 @@ const GroupForm = (props: any) => {
         </GroupFormWrapper>
 }
 const FormElementDOM = (props: any) => {
-    const { userName, showUserMessage } = props
+    // const { userName } = props
     const [ groupUsers, updateGroupUsers ] = useState([])
 
-    return <FormElement onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault()
-            FormSubmit(groupUsers, userName, showUserMessage)
-        }}>
-        <InputWrapper
-            placeholder={'#channel name'}
-            label='Name'
-            id='channelName'
-            maxLength={22}
-        />
-        <SearchWrapperDOM
-            updateGroupUsers={updateGroupUsers}
-            groupUsers={groupUsers}
-        />
-        <SubmitWrapper>
-            <Input value='Submit' type='submit' />
-            {/* <Input value='Cancel' type='button' /> */}
-        </SubmitWrapper>
-    </FormElement>
+    return <UserChatListConsumer>
+        {context => {
+            const { updateGroup } = context
+            return <AppConsumer>
+                {AppContext => <FormElement onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+                        event.preventDefault()
+                        FormSubmit(groupUsers, AppContext, updateGroup)
+                    }}>
+                    <InputWrapper
+                        placeholder={'#channel name'}
+                        label='Name'
+                        id='channelName'
+                        maxLength={22}
+                    />
+                    <SearchWrapperDOM
+                        updateGroupUsers={updateGroupUsers}
+                        groupUsers={groupUsers}
+                    />
+                    <SubmitWrapper>
+                        <Input value='Submit' type='submit' />
+                        {/* <Input value='Cancel' type='button' /> */}
+                    </SubmitWrapper>
+                </FormElement>
+                }
+            </AppConsumer>
+        }}
+    </UserChatListConsumer>
 }
 const SearchWrapperDOM = (props: any) => {
     const {

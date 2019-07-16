@@ -7,28 +7,32 @@ import {
     ElementWithWrapper
 } from '../../component'
 import { LeftPanelProps } from './typings'
+import { AppConsumer }  from '../context'
 
 const LeftPanel = (props: LeftPanelProps) => {
-    const { changePageView } = props
+    // const { changePageView } = props
 
-    return <LeftWrapper>
-        <ElementWithWrapper clickHandler={e => changePageView('form')}>
-            <IconWithText
-                text='Channels'
-                isHeading={false}
-                content="f055"
-            />
-        </ElementWithWrapper>
-        <GroupList {...props} />
-        <ElementWithWrapper clickHandler={e => changePageView('search')}>
-            <IconWithText
-                text='Direct Message'
-                isHeading={false}
-                content='f055'
-            />
-        </ElementWithWrapper>
-        <ChatList {...props} />
-    </LeftWrapper>
+    return <AppConsumer>
+        {context => <LeftWrapper>
+            <ElementWithWrapper clickHandler={e => context.updateCurrentPage('form')}>
+                <IconWithText
+                    text='Channels'
+                    isHeading={false}
+                    content="f055"
+                />
+            </ElementWithWrapper>
+            <GroupList {...context} />
+            <ElementWithWrapper clickHandler={e => context.updateCurrentPage('search')}>
+                <IconWithText
+                    text='Direct Message'
+                    isHeading={false}
+                    content='f055'
+                />
+            </ElementWithWrapper>
+            <ChatList />
+        </LeftWrapper>
+        }
+    </AppConsumer>
 }
 
 export { LeftPanel }

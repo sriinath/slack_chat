@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useState } from 'react'
 import {
     Text,
     Input,
@@ -13,90 +12,100 @@ import {
     MessageCont,
     MessageSubmitCont
 } from './styled'
+import { AppConsumer } from '../context'
 
 const UserMessageWrapper = (props: any) => {
-    const { socket, recipientUserName, userName } = props
+    const { socket } = props
 
-    return  <MessageSubmitCont
-        onSubmit={e => {
-            e.preventDefault()
-            console.log(recipientUserName)
-            let MessageDom: any = document.getElementById('messageInput')
-            let messageStoreData = {
-                recipientUserName: userName,
-                message: MessageDom.value,
-                time: new Date().toISOString()
-            }
-            socket.emit('send_message', messageStoreData, recipientUserName)
-        }}
-    >
-        <InputWrapper
-            placeholder='Jot Something Down'
-            id='messageInput'
-        />
-        <Input type='submit' value='SEND' />
-    </MessageSubmitCont>
+    return <MessageSubmitCont
+            onSubmit={e => {
+                const { recipientUserName, userName, currentPage } = props
+                e.preventDefault()
+                console.log(recipientUserName)
+                let MessageDom: any = document.getElementById('messageInput')
+                let messageStoreData = {
+                    recipientUserName: userName,
+                    message: MessageDom.value,
+                    time: new Date().toISOString()
+                }
+                socket && socket.emit('send_message', messageStoreData, recipientUserName, currentPage === 'group')
+            }}
+        >
+            <InputWrapper
+                placeholder='Jot Something Down'
+                id='messageInput'
+            />
+            <Input type='submit' value='SEND' />
+        </MessageSubmitCont>
 }
 
-class MessageList extends React.Component<any> {
+class MessageList extends React.PureComponent<any> {
     static contextType = SocketContext
     render() {
-        const { recipientUserName, userName } = this.props
-        return <MessageListCont>
-            <MessageListConsumer>
-            {context => {
-                const {
-                    chatId,
-                    chats,
-                    length
-                } = context
-                let ChatMessageDOM: any = []
-                chats && chats.forEach((value, key) => {
-                    let UserChatsDOM: any = []
-                    let PrevRecipientName = ''
-                    UserChatsDOM.push(<Text text={key} isHeading={false} key={key} />)
-                    value.forEach((timeValue, timeKey) => {
-                        timeValue.map((chatData, chatKey) => {
-                            const {
-                                message,
-                                recipientUserName
-                            } = chatData
-                            UserChatsDOM.push(<MessageBlockWrapper key={'chatmessage'+ timeKey + chatKey}>
-                                {
-                                    PrevRecipientName !== recipientUserName ? <MessageTitleWrapper>
-                                        <Text
-                                            text={recipientUserName}
-                                            isHeading={false}
-                                            isTitle={true}
-                                        />
-                                        <Text
-                                            text={timeKey}
-                                            isHeading={false}
-                                        />
-                                    </MessageTitleWrapper>
-                                    : null
-                                }
-                                <Text
-                                    text={message}
-                                    isHeading={false}
-                                />
-                            </MessageBlockWrapper>)
-                            PrevRecipientName = recipientUserName
+        return <AppConsumer>
+        {AppContext => {
+            const chatRecipientUserName = AppContext.recipientUserName
+            const chatUserName = AppContext.userName
+            const { currentPage } = AppContext
+            return <MessageListCont>
+                <MessageListConsumer>
+                {context => {
+                    const {
+                        chatId,
+                        chats,
+                        length
+                    } = context
+                    console.log(context)
+                    let ChatMessageDOM: any = []
+                    chats && chats.forEach((value, key) => {
+                        let UserChatsDOM: any = []
+                        let PrevRecipientName = ''
+                        UserChatsDOM.push(<Text text={key} isHeading={false} key={key} />)
+                        value.forEach((timeValue, timeKey) => {
+                            timeValue.map((chatData, chatKey) => {
+                                const {
+                                    message,
+                                    recipientUserName
+                                } = chatData
+                                UserChatsDOM.push(<MessageBlockWrapper key={'chatmessage'+ timeKey + chatKey}>
+                                    {
+                                        PrevRecipientName !== recipientUserName ? <MessageTitleWrapper>
+                                            <Text
+                                                text={recipientUserName}
+                                                isHeading={false}
+                                                isTitle={true}
+                                            />
+                                            <Text
+                                                text={timeKey}
+                                                isHeading={false}
+                                            />
+                                        </MessageTitleWrapper>
+                                        : null
+                                    }
+                                    <Text
+                                        text={message}
+                                        isHeading={false}
+                                    />
+                                </MessageBlockWrapper>)
+                                PrevRecipientName = recipientUserName
+                            })
                         })
+                        ChatMessageDOM.push(UserChatsDOM)
                     })
-                    ChatMessageDOM.push(UserChatsDOM)
-                })
-                return <MessageCont>
-                    {ChatMessageDOM}
-                    <UserMessageWrapper
-                        socket={this.context}
-                        recipientUserName={recipientUserName}
-                        userName={userName}
-                    />
-                </MessageCont>
-            }}
-            </MessageListConsumer>
-        </MessageListCont>
+                    return <MessageCont>
+                        {ChatMessageDOM}
+                        <UserMessageWrapper
+                            socket={this.context}
+                            recipientUserName={chatRecipientUserName}
+                            userName={chatUserName}
+                            currentPage={currentPage}
+                        />
+                    </MessageCont>
+                }}
+                </MessageListConsumer>
+            </MessageListCont>
+        }}
+        </AppConsumer>
     }
 }
 

@@ -5,18 +5,24 @@ import { connect } from 'react-redux'
 import { AppState } from '../../store/reducer'
 import { DataAPI } from '../../../config'
 import { UserChatListAction } from '../../store/actions'
-import { UserChats } from '../../../types'
+import { UserChats, GroupType } from '../../../types'
 
-import { SocketConsumer } from '../Socket'
-const defaultUserChatListContext: UserChats = {
+import { SocketConsumer, SocketContext } from '../Socket'
+
+interface UserChatsContextTypes extends UserChats {
+    updateGroup: (updateData: GroupType) => void
+}
+const defaultUserChatListContext: UserChatsContextTypes = {
     chats: [],
     groups: [],
-    userName: ''
+    userName: '',
+    updateGroup: null
 }
 const UserChatListContext = React.createContext(defaultUserChatListContext)
 const { Consumer, Provider } = UserChatListContext
 
 class UserChatListContainer extends React.Component<any> {
+    static contextType = SocketContext
     componentDidMount() {
         const { getUserList } = DataAPI
         const { userName } = this.props
@@ -32,9 +38,12 @@ class UserChatListContainer extends React.Component<any> {
                     if(status.toLowerCase() === 'success') {
                         const { data } = resp
                         if(data && data.status && data.status.toLowerCase() === 'success') {
-                            let UserInfo =  data.data || []
+                            let UserInfo =  data.data && Array.isArray(data.data) && data.data.length && data.data[0] || {}
                             // const UserChats = UserInfo.length && UserInfo[0].chats || []
-                            this.props.dispatch(UserChatListAction(UserInfo[0]))
+                            this.context && this.context.emit('set_chats', data && data.chats || [])
+                            this.context && this.context.emit('add_to_group', data && data.groups || [])
+                            UserInfo.updateGroup = (updateData: GroupType) => this.updateGroupData(updateData)
+                            this.props.dispatch(UserChatListAction(UserInfo))
                         }
                     }
                 }
@@ -52,19 +61,28 @@ class UserChatListContainer extends React.Component<any> {
             this.props.dispatch(UserChatListAction(updatedChatInfo))
         }
     }
+    updateGroupData(groupdData: GroupType) {
+        const { data } = this.props
+        const { groups } = data
+        if(groups && Array.isArray(groups) && groups.length) {
+            let checkGroupDuplication = groups.filter(group => groupdData.groupName === group.name)
+            if(checkGroupDuplication && Array.isArray(checkGroupDuplication) && !checkGroupDuplication.length) {
+                let updatedData = { ...data }
+                let updatedGroups = [ ...groups ]
+                updatedGroups.push(groupdData)
+                updatedData.groups = updatedGroups
+                this.props.dispatch(UserChatListAction(updatedData))
+            }
+        }
+    }
     render() {
         const {
             data,
             children
         } = this.props
-        return <SocketConsumer>
-            {socket => {
-                socket.emit('set_chats', data && data.chats || [])
-                return <Provider value={data}>
-                    {children}
-                </Provider>
-            }}
-        </SocketConsumer>
+        return <Provider value={data}>
+            {children}
+        </Provider>
     }
 }
 

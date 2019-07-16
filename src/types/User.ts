@@ -9,11 +9,12 @@ interface ChatType {
     starred?: 'true' | 'false'
 }
 interface GroupType {
-    chatId: string
-    name: string
+    groupId: string
+    groupName: string
 }
 
 export {
     UserChats,
     ChatType,
+    GroupType
 }

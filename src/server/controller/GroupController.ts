@@ -86,7 +86,6 @@ class Group {
                                     data.splice(key, 1)
                                 }
                             })
-                            console.log(data)
                             if(!data.length) {
                                 return (Util.returnResp([], 'Failure', 200, 'Users are alrady part of the group'))
                             }

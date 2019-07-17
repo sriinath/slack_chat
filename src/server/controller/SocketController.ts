@@ -12,7 +12,6 @@ import {
 } from './index'
 import { SocketModel } from '../model'
 import { Collection } from "mongodb"
-import console = require("console");
 
 const uuidv1 = require('uuid/v1')
 class SocketController {
@@ -38,7 +37,9 @@ class SocketController {
             let messageStatus = await this.sendMessage(data, recipientUserName, isGroup)
             if(messageStatus) {
                 SocketController.socketIO.sockets.in(recipientUserName).emit('newMessage', data, messageStatus, recipientUserName)
-                SocketController.socketIO.sockets.in(this.userName).emit('message_status', data, messageStatus, recipientUserName)
+                if(!isGroup) {
+                    SocketController.socketIO.sockets.in(this.userName).emit('message_status', data, messageStatus, recipientUserName)
+                }
             }
             else
                 SocketController.socketIO.sockets.in(this.userName).emit('message_status', data, messageStatus, recipientUserName)
@@ -50,7 +51,6 @@ class SocketController {
         this.userData.chats = data
     }
     private updateUserData = (data: ChatType) => {
-        console.log(data)
         if(!this.userData.chats) {
             this.userData.chats = [data]
         }

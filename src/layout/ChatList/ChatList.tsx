@@ -27,6 +27,8 @@ const ChatListBlock = (props: AppContextProps) => {
         chatId
     } = props
     const [ activeChat, updateActiveChat ] = useState(false)
+    const [ highlightChat, updateHighlightChat ] = useState(false)
+
     return (
         <SocketConsumer>
             {socket => <AppConsumer>
@@ -34,7 +36,8 @@ const ChatListBlock = (props: AppContextProps) => {
                     const {
                         updateChatId,
                         updateRecipientUserName,
-                        updateCurrentPage
+                        updateCurrentPage,
+                        newChats
                     } = AppContext
                     if(AppContext.chatId && AppContext.chatId.trim().length) {
                         if(AppContext.chatId === chatId) {
@@ -42,6 +45,9 @@ const ChatListBlock = (props: AppContextProps) => {
                         }
                         else {
                             updateActiveChat(false)
+                            if(newChats.indexOf(chatId) > -1) {
+                                updateHighlightChat(true)
+                            }
                         }
                     }
                     else if(AppContext.recipientUserName && AppContext.recipientUserName.trim().length && AppContext.recipientUserName === recipientUserName) {
@@ -49,8 +55,11 @@ const ChatListBlock = (props: AppContextProps) => {
                     }
                     else {
                         updateActiveChat(false)
+                        if(newChats.indexOf(chatId) > -1) {
+                            updateHighlightChat(true)
+                        }
                     }
-                    return <StyledChatWrapper isActive={activeChat} >
+                    return <StyledChatWrapper isActive={activeChat} isNew={highlightChat}>
                         <ElementWithWrapper
                             clickHandler={e => {
                                 if(AppContext.chatId !== chatId) {

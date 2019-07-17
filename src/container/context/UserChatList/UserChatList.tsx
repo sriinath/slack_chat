@@ -7,7 +7,7 @@ import { DataAPI } from '../../../config'
 import { UserChatListAction } from '../../store/actions'
 import { UserChats, GroupType } from '../../../types'
 
-import { SocketConsumer, SocketContext } from '../Socket'
+import { SocketContext } from '../Socket'
 
 interface UserChatsContextTypes extends UserChats {
     updateGroup: (updateData: GroupType) => void
@@ -40,8 +40,8 @@ class UserChatListContainer extends React.Component<any> {
                         if(data && data.status && data.status.toLowerCase() === 'success') {
                             let UserInfo =  data.data && Array.isArray(data.data) && data.data.length && data.data[0] || {}
                             // const UserChats = UserInfo.length && UserInfo[0].chats || []
-                            this.context && this.context.emit('set_chats', data && data.chats || [])
-                            this.context && this.context.emit('add_to_group', data && data.groups || [])
+                            this.context && this.context.emit('set_chats', UserInfo && UserInfo.chats || [])
+                            this.context && this.context.emit('add_to_group', UserInfo && UserInfo.groups || [])
                             UserInfo.updateGroup = (updateData: GroupType) => this.updateGroupData(updateData)
                             this.props.dispatch(UserChatListAction(UserInfo))
                         }

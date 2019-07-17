@@ -12,7 +12,6 @@ class User {
         const { body } = req
         if(body) {
             const { userName } = body
-            console.log(userName)
             this.fetchUserList(userName)
             .then(userResp => {
                 if(userResp && userResp.data && Array.isArray(userResp.data) && userResp.data.length) {

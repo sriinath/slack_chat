@@ -6,9 +6,15 @@ import { Util } from '../utils';
 const { ChatListCollection } = config
 
 class Chat {
-    getChatList(chatId: string) {
+    getChatList(chatId: string, isGroup: boolean) {
         if(chatId) {
-            const toFind = { chatId }
+            let toFind
+            if(isGroup) {
+                toFind = { groupId: chatId }
+            }
+            else {
+                toFind = { chatId }
+            }
             return UtilModel.getData(ChatListCollection, toFind)
         }
     }
@@ -28,14 +34,20 @@ class Chat {
         }
         return Promise.resolve('time, message, recipientUserName & chatId are mandatory')
     }
-    addChatMessage(data: UserChatType, chatId: string) {
+    addChatMessage(data: UserChatType, chatId: string, isGroup: boolean) {
         const {
             time,
             message,
             recipientUserName
         } = data
         if(time && message && recipientUserName) {
-            const toFind = { chatId }
+            let toFind
+            if(isGroup) {
+                toFind = { groupId: chatId }
+            }
+            else {
+                toFind = { chatId }
+            }
             const toUpdate = {$push: { "chats":  data }}
             if(chatId) {
                 return UtilModel.updateData(ChatListCollection, toFind, toUpdate)

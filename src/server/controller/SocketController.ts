@@ -1,7 +1,8 @@
 import {
     UserChats,
     UserChatType,
-    ChatType
+    ChatType,
+    GroupType
 } from "../../types"
 import io = require('socket.io')
 
@@ -33,8 +34,8 @@ class SocketController {
         //     console.log(recipientName)
         // })
         this.socket.join(this.userName)
-        this.socket.on('send_message', async (data, recipientUserName) => {
-            let messageStatus = await this.sendMessage(data, recipientUserName)
+        this.socket.on('send_message', async (data, recipientUserName, isGroup) => {
+            let messageStatus = await this.sendMessage(data, recipientUserName, isGroup)
             if(messageStatus) {
                 SocketController.socketIO.sockets.in(recipientUserName).emit('newMessage', data, messageStatus, recipientUserName)
                 SocketController.socketIO.sockets.in(this.userName).emit('message_status', data, messageStatus, recipientUserName)
@@ -43,6 +44,7 @@ class SocketController {
                 SocketController.socketIO.sockets.in(this.userName).emit('message_status', data, messageStatus, recipientUserName)
         })
         this.socket.on('set_chats', data => this.setUserChats(data))
+        this.socket.on('add_to_group', groups => this.addMemberToGroup(groups))
     }
     private setUserChats = (data: ChatType[]) => {
         this.userData.chats = data
@@ -56,15 +58,26 @@ class SocketController {
             this.userData.chats.push(data)
         }
     }
-    private sendMessage = async (data: UserChatType, recipientUserName: string) => {
+    private sendMessage = async (data: UserChatType, recipientUserName: string, isGroup?: boolean) => {
         const checkRecipient = this.userData && this.userData.chats && this.userData.chats.length ? this.userData.chats.filter(chat => chat.recipientUserName === recipientUserName) : []
         if(checkRecipient.length && checkRecipient[0] && checkRecipient[0].chatId) {
             const chatId = checkRecipient[0].chatId || ''
-            let postMessageAdd = await this.addUserMessage(data, chatId)
+            let postMessageAdd = await this.addUserMessage(data, chatId, false)
             if(postMessageAdd) {
                 return chatId
             }
             return ''
+        }
+        else if(isGroup) {
+            const checkRecipient = this.userData && this.userData.groups && this.userData.groups.length ? this.userData.groups.filter(chat => chat.groupName === recipientUserName) : []
+            if(checkRecipient.length && checkRecipient[0] && checkRecipient[0].groupId) {
+                const chatId = checkRecipient[0].groupId || ''
+                let postMessageAdd = await this.addUserMessage(data, chatId, true)
+                if(postMessageAdd) {
+                    return chatId
+                }
+                return ''
+            }
         }
         else {
             const identifier = uuidv1()
@@ -81,8 +94,8 @@ class SocketController {
         }
     }
     
-    private addUserMessage = (data: UserChatType, chatId: string) => {
-        return ChatController.addChatMessage(data, chatId)
+    private addUserMessage = (data: UserChatType, chatId: string, isGroup: boolean) => {
+        return ChatController.addChatMessage(data, chatId, isGroup)
         .then((data: any) => {
             if(data && data.modifiedCount) 
                 return true
@@ -92,6 +105,18 @@ class SocketController {
             console.log(err)
             return false
         })
+    }
+
+    private addMemberToGroup = (groups: GroupType[]) => {
+        if(groups && Array.isArray(groups) && groups.length) {
+            this.userData.groups = groups
+            groups.map(group => {
+                const { groupName } = group
+                if(groupName && groupName.trim().length) {
+                    this.socket.join(groupName)
+                }
+            })
+        }
     }
 }
 

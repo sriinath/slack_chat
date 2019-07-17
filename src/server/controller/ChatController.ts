@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { Util } from '../utils'
 import { ChatModel } from '../model'
-import { ChatType, UserChatType } from '../../types'
+import { ChatType, UserChatType, GroupType } from '../../types'
 import { UserController } from '../controller'
 const uuidv1 = require('uuid/v1')
 
@@ -12,13 +12,14 @@ class Chat {
             const {
                 chatId,
                 userName,
+                isGroup,
                 limit,
                 offset
             } = body
             if(chatId && userName) {
-                const validChatId = await this.checkValidChatId(userName, chatId)
+                const validChatId = await this.checkValidChatId(userName, chatId, isGroup)
                 if(validChatId) {
-                    ChatModel.getChatList(chatId)
+                    ChatModel.getChatList(chatId, isGroup)
                     .then(data => {
                         if(data && Array.isArray(data) && data.length) {
                             const chatInfo = data[0]
@@ -58,14 +59,20 @@ class Chat {
             res.send(Util.returnResp([], 'Failure', 200, 'cannot read the user params'))
         }
     }
-    private async checkValidChatId(userName: string, chatId: string) {
+    private async checkValidChatId(userName: string, chatId: string, isGroup?: boolean) {
         if(userName && chatId) {
             const userResp = await UserController.fetchUserList(userName)
             if(userResp && userResp.status && userResp.status.toLowerCase() === 'success') {
                 const { data } = userResp
                 if(data && data.length) {
                     const tempUserData = data[0]
-                    const checkChatId = tempUserData && tempUserData.chats && tempUserData.chats.length && tempUserData.chats.filter((item: ChatType) => item.chatId === chatId) || []
+                    let checkChatId = []
+                    if(isGroup) {
+                        checkChatId = tempUserData && tempUserData.groups && tempUserData.groups.length && tempUserData.groups.filter((item: GroupType) => item.groupId === chatId) || []
+                    }
+                    else {
+                        checkChatId = tempUserData && tempUserData.chats && tempUserData.chats.length && tempUserData.chats.filter((item: ChatType) => item.chatId === chatId) || []
+                    }
                     if(checkChatId && checkChatId.length) {
                         return true
                     }
@@ -102,14 +109,14 @@ class Chat {
         }
         return Promise.resolve('Please provide all mandatory fields')
     }
-    addChatMessage(data: UserChatType, chatId: string) {
+    addChatMessage(data: UserChatType, chatId: string, isGroup: boolean) {
         const {
             recipientUserName,
             time,
             message
         } = data
         if(chatId && recipientUserName && message && time) {
-            return ChatModel.addChatMessage(data, chatId)
+            return ChatModel.addChatMessage(data, chatId, isGroup)
         }
         else {
             return Promise.resolve('Please provide all mandatory fields')

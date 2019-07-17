@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { Text, ElementWithWrapper, ListItem } from '../../component'
 import { UserChatListConsumer } from '../../container'
+import { AppConsumer } from '../context'
+import { StyledChatWrapper } from './styled'
 
 const GroupList = (props: any) => {
     return <UserChatListConsumer>
@@ -20,15 +22,29 @@ const GroupListBlock = (props: any) => {
         groupName,
         groupId
     } = props
-    const clickHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        console.log(groupId)
-    }    
     return (
-        <ElementWithWrapper
-            clickHandler={clickHandler}
-        >
-            <Text isHeading={false} text={groupName} />
-        </ElementWithWrapper>
+        <AppConsumer>
+            {AppContext => {
+                const { chatId } = AppContext
+                let isActive =  false
+                if(chatId && groupId && chatId === groupId) {
+                    isActive = true
+                }
+                return <StyledChatWrapper isActive={isActive}>
+                    <ElementWithWrapper
+                        clickHandler={e => {
+                            if(chatId !== groupId) {
+                                AppContext.updateChatId(groupId)
+                                AppContext.updateRecipientUserName('')
+                                AppContext.currentPage !== 'group' && AppContext.updateCurrentPage('group')    
+                            }
+                        }}
+                    >
+                        <Text isHeading={false} text={groupName} />
+                    </ElementWithWrapper>
+                </StyledChatWrapper>
+            }}
+        </AppConsumer>
     )
 }
 

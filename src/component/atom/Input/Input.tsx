@@ -18,6 +18,7 @@ const Input = (props: InputProps) => {
         maxLength,
         minLength,
         reset,
+        onChange,
         ...remainingHandlers
     } = props
     const [ curValue, setValue ] = useState(value || '')
@@ -28,8 +29,8 @@ const Input = (props: InputProps) => {
         <InputBox
             id={id}
             placeholder={placeholder}
-            value={curValue}
-            onChange={e => setValue(onInput(e))}
+            value={onChange ? value : curValue}
+            onChange={e => onChange ? onChange(e) : setValue(onInput(e))}
             type={type || 'text'}
             onSubmit={onSubmit || null}
             maxLength={maxLength}

@@ -51,7 +51,7 @@ const FormSubmit = (users: {userName: string}[], context: AppContextProps, updat
                     currentPage
                 } = context
                 updateChatId(groupId)
-                updateRecipientUserName('')
+                updateRecipientUserName(groupName)
                 currentPage !== 'group' && updateCurrentPage('group')
             }
             else {

@@ -45,7 +45,6 @@ class User {
         .then((data: UserChats[]) => {
             if(data && data.length)
                 return data
-            console.log(data)
             return []
         })
         .catch((err: Error) => console.log(err))

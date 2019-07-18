@@ -20,7 +20,8 @@ const App = (props: any) => {
         chatId: '',
         userName,
         recipientUserName: '',
-        currentPage: 'chat'
+        currentPage: 'chat',
+        newChats: ['']
     }
     let updateChatID = false
     return  <SocketProvider url='localhost:3000' userName={userName}>

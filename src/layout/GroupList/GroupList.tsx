@@ -25,17 +25,23 @@ const GroupListBlock = (props: any) => {
     return (
         <AppConsumer>
             {AppContext => {
-                const { chatId } = AppContext
+                const { chatId,newChats } = AppContext
                 let isActive =  false
+                let highlightChat = false
                 if(chatId && groupId && chatId === groupId) {
                     isActive = true
                 }
-                return <StyledChatWrapper isActive={isActive}>
+                else {
+                    if(newChats.indexOf(groupId) > -1) {
+                        highlightChat = true
+                    }
+                }
+                return <StyledChatWrapper isActive={isActive} isNew={highlightChat}>
                     <ElementWithWrapper
                         clickHandler={e => {
                             if(chatId !== groupId) {
                                 AppContext.updateChatId(groupId)
-                                AppContext.updateRecipientUserName('')
+                                AppContext.updateRecipientUserName(groupName)
                                 AppContext.currentPage !== 'group' && AppContext.updateCurrentPage('group')    
                             }
                         }}

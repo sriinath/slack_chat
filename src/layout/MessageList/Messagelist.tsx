@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useState } from 'react'
 import {
     Text,
     Input,
@@ -16,12 +17,11 @@ import { AppConsumer } from '../context'
 
 const UserMessageWrapper = (props: any) => {
     const { socket } = props
-
+    const [ inputValue, updateInputValue ] = useState('')
     return <MessageSubmitCont
             onSubmit={e => {
                 const { recipientUserName, userName, currentPage } = props
                 e.preventDefault()
-                console.log(recipientUserName)
                 let MessageDom: any = document.getElementById('messageInput')
                 let messageStoreData = {
                     recipientUserName: userName,
@@ -29,11 +29,14 @@ const UserMessageWrapper = (props: any) => {
                     time: new Date().toISOString()
                 }
                 socket && socket.emit('send_message', messageStoreData, recipientUserName, currentPage === 'group')
+                updateInputValue('')
             }}
         >
             <InputWrapper
                 placeholder='Jot Something Down'
                 id='messageInput'
+                value={inputValue}
+                onChange={(e: React.FormEvent<HTMLInputElement>) => updateInputValue(e.currentTarget && e.currentTarget.value || '')}
             />
             <Input type='submit' value='SEND' />
         </MessageSubmitCont>
@@ -55,7 +58,6 @@ class MessageList extends React.PureComponent<any> {
                         chats,
                         length
                     } = context
-                    console.log(context)
                     let ChatMessageDOM: any = []
                     chats && chats.forEach((value, key) => {
                         let UserChatsDOM: any = []

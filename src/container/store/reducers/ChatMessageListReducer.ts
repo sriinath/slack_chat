@@ -78,7 +78,6 @@ const ChatMessageListReducer = (state: any = new Map(), action: any) => {
                     chatId,
                     length
                 }
-                console.log(chatMessageMap)
                 updatedState.set(chatId, { ...updatedMessageStore })
             }
             return updatedState

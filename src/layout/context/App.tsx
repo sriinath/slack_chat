@@ -25,7 +25,7 @@ class AppPanel extends React.Component<AppContextProps, AppContextProps> {
         }
     }
     componentDidMount() {
-        this.context.on('newMessage', (data: any, chatId: string, recipientUserName: string) => {
+        this.context && this.context.on('newMessage', (data: any, chatId: string, recipientUserName: string) => {
             console.log(chatId)
             if(chatId !== this.state.chatId) {
                 let newChatArr = [...this.state.newChats]

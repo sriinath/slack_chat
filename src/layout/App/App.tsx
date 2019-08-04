@@ -14,7 +14,11 @@ import { AppProvider, AppConsumer } from '../context'
 
 const App = (props: any) => {
     const [ newChat, addNewChat ] = useState(undefined)
-    let params = (new URL(location.href)).searchParams
+    let url = 'localhost:3000'
+    if(typeof(location) != "undefined") {
+        url = location && location.href || 'localhost:3000'
+    }
+    let params = (new URL(url)).searchParams
     const userName = params.get('userName')
     const initialValue = {
         chatId: '',
@@ -24,7 +28,10 @@ const App = (props: any) => {
         newChats: ['']
     }
     let updateChatID = false
-    const SocketUrl = location.origin || 'localhost:3000'
+    let SocketUrl = 'localhost:3000'
+    if(typeof(location) != "undefined") {
+        SocketUrl = location && location.origin || 'localhost:3000'
+    }
     return  <SocketProvider url={SocketUrl} userName={userName}>
         <UserChatListContainer userName={userName} newChat={newChat}>
             <SocketConsumer>

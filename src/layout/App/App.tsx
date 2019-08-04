@@ -24,7 +24,8 @@ const App = (props: any) => {
         newChats: ['']
     }
     let updateChatID = false
-    return  <SocketProvider url='localhost:3000' userName={userName}>
+    const SocketUrl = location.origin || 'localhost:3000'
+    return  <SocketProvider url={SocketUrl} userName={userName}>
         <UserChatListContainer userName={userName} newChat={newChat}>
             <SocketConsumer>
                 {socket => {

@@ -25,7 +25,7 @@ app.use('/chat/', ChatRoute)
 app.use('/user/', UserRoute)
 app.use('/group/', GroupRoute)
 
-const server = app.listen(3000, () => {
+const server = app.listen({ port: process.env.PORT || 3000 }, () => {
     console.log('app started')
 });
 ClientApp(app)

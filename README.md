@@ -46,3 +46,7 @@ Server Side
 
     Run the file with queryparam userName:
     ```http://localhost:8080/?userName=srinath```
+
+Hosted Link:
+
+    ``` https://slackmessenger.herokuapp.com/ ```

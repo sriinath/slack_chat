@@ -7,7 +7,7 @@ import {
     UserRoute,
     GroupRoute
 } from './routes'
-
+import ClientApp from './client'
 const socketInit = require('./socket')
 
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -28,5 +28,5 @@ app.use('/group/', GroupRoute)
 const server = app.listen(3000, () => {
     console.log('app started')
 });
-
+ClientApp(app)
 socketInit(server)

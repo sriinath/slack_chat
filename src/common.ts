@@ -1,14 +1,16 @@
 import { createGlobalStyle } from 'styled-components'
-import fontawesomeTTF from './fonts/fontawesome-webfont.ttf'
-import fontawesomeWOFF from './fonts/fontawesome-webfont.woff'
-import fontawesomeWOFF2 from './fonts/fontawesome-webfont.woff2'
-import fontawesomeEOT from './fonts/fontawesome-webfont.eot'
-const fonts = [
-    fontawesomeTTF,
-    fontawesomeEOT,
-    fontawesomeWOFF,
-    fontawesomeWOFF2
-]
+// import fontawesomeTTF from './fonts/fontawesome-webfont.ttf'
+// import fontawesomeWOFF from './fonts/fontawesome-webfont.woff'
+// import fontawesomeWOFF2 from './fonts/fontawesome-webfont.woff2'
+// import fontawesomeEOT from './fonts/fontawesome-webfont.eot'
+// if(typeof(document) !== 'undefined') {
+//     const fonts = [
+//         fontawesomeTTF,
+//         fontawesomeEOT,
+//         fontawesomeWOFF,
+//         fontawesomeWOFF2
+//     ]    
+// }
 const Global = createGlobalStyle`
     @font-face {
         font-family: 'FontAwesome';

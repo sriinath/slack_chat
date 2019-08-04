@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A Simple Chat Messanger",
   "scripts": {
-    "start": "node ./dist/server/index.js",
+    "start": "node ./dist/build/server/index.js",
     "client": "webpack-dev-server --mode development",
     "build": "tsc && webpack --mode production",
     "client_build": "webpack --mode production",
